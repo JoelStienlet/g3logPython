@@ -18,7 +18,7 @@ class get_pybind_include(object):
         return pybind11.get_include(self.user)
 
 
-with open("readme.md", "r") as fh:
+with open("README.md", "r") as fh:
     long_description = fh.read()
 
 # https://docs.python.org/3/distutils/setupscript.html#describing-extension-modules

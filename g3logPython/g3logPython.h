@@ -120,11 +120,13 @@ public:
     
 public:
    
+  using SysLogSinkIface_t = ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>;
+  using LogRotateSinkIface_t = ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>;
   // Interfaces to the sinks.
   // each sink type has its own interface class here.
   // Access is thread safe, but contains locks.
-  ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>    SysLogSinks;
-  ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>    LogRotateSinks;
+  SysLogSinkIface_t SysLogSinks;
+  LogRotateSinkIface_t LogRotateSinks;
 
   // scope_lifetime on first call:
   //  - when set to false (default), the interface remains alive until the program exits. 
@@ -155,11 +157,6 @@ private:
     } singleton;
     
   std::unique_ptr<LogWorker> worker;
- 
-  // TODO : check if they're all required here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  friend class SysLogSnkHndl;   // allows that class to call addSink() and call()
-  friend class LogRotateSnkHndl; 
-  friend class cmmnSinkHndl;
 };
   
     
@@ -213,7 +210,7 @@ public:
   SysLogSnkHndl &operator=(const SysLogSnkHndl &) = delete;
   
 private:
-  friend class ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>;
+  friend ifaceLogWorker::SysLogSinkIface_t;
   SysLogSnkHndl(std::shared_ptr<ifaceLogWorker> pworker, sinkkey_t key) : cmmnSinkHndl(pworker, key) {};
   
 }; // SysLogSnkHndl
@@ -239,7 +236,7 @@ public:
   LogRotateSnkHndl &operator=(const LogRotateSnkHndl &) = delete;
   
 private:
-  friend class ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>;
+  friend ifaceLogWorker::LogRotateSinkIface_t;
   LogRotateSnkHndl(std::shared_ptr<ifaceLogWorker> pworker, sinkkey_t key) : cmmnSinkHndl(pworker, key)  {};
   
 }; // LogRotateSnkHndl  

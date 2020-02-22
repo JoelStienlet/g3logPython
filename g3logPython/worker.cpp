@@ -49,7 +49,9 @@ g3::initializeLogging(_instance.lock() -> worker.get());
    
     
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
-g3::SinkHandle<g3logSinkCls> * ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::Ptr_Mnger::access(sinkkey_t key)
+g3::SinkHandle<g3logSinkCls> * 
+ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
+Ptr_Mnger::access(sinkkey_t key)
 {
   _lock.lock(); // lock_shared()  TODO
   auto search = _key_to_uniquePtr.find(key);
@@ -61,14 +63,18 @@ g3::SinkHandle<g3logSinkCls> * ifaceLogWorker::SinkHndlAccess<g3logSinkCls, Clbk
    
 
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
-void ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::Ptr_Mnger::done(sinkkey_t key)
+void 
+ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
+Ptr_Mnger::done(sinkkey_t key)
 {
   _lock.unlock(); // lock_shared() TODO
 }
 
    
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
-sinkkey_t ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<g3logSinkCls>> g3logHandle)
+sinkkey_t 
+ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
+Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<g3logSinkCls>> g3logHandle)
 {
 sinkkey_t newkey;
 
@@ -99,7 +105,9 @@ return newkey;
 }
    
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
-bool ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::Name_Mnger::reserve(const std::string& name)
+bool 
+ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
+Name_Mnger::reserve(const std::string& name)
 {
   { // raii mutex scope
       std::lock_guard<std::mutex> raiiLock(_lock); // https://en.cppreference.com/w/cpp/thread/scoped_lock
@@ -115,7 +123,9 @@ bool ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkC
 }
    
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
-void ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::Name_Mnger::set_key(const std::string& name, sinkkey_t key)
+void 
+ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
+Name_Mnger::set_key(const std::string& name, sinkkey_t key)
 {
   { // raii mutex scope
       std::lock_guard<std::mutex> raiiLock(_lock); 
@@ -135,15 +145,11 @@ void ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkC
 //     class pySinkCls      --> SysLogSnkHndl 
 //
 
-
-template void ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, SysLogSnkHndl>::Ptr_Mnger::done(sinkkey_t key);
-
-template g3::SinkHandle<g3::SyslogSink> * ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, SysLogSnkHndl>::Ptr_Mnger::access(sinkkey_t key);
-
-template sinkkey_t ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<g3::SyslogSink>>);
-
-template bool ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>::Name_Mnger::reserve(const std::string& name);
-template void ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>::Name_Mnger::set_key(const std::string& name, sinkkey_t key);
+template void ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::done(sinkkey_t key);
+template g3::SinkHandle<g3::SyslogSink> * ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::access(sinkkey_t key);
+template sinkkey_t ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<g3::SyslogSink>>);
+template bool ifaceLogWorker::SysLogSinkIface_t::Name_Mnger::reserve(const std::string& name);
+template void ifaceLogWorker::SysLogSinkIface_t::Name_Mnger::set_key(const std::string& name, sinkkey_t key);
 
 // explicit instantiation of LogRotate:
 
@@ -154,15 +160,12 @@ template void ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, 
 //     ClbkType g3logMsgMvr --> &LogRotate::save
 //     class pySinkCls      --> LogRotateSnkHndl 
 //
-
-template void ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, LogRotateSnkHndl>::Ptr_Mnger::done(sinkkey_t key);
-
-template g3::SinkHandle<LogRotate> * ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, LogRotateSnkHndl>::Ptr_Mnger::access(sinkkey_t key);
-
-template sinkkey_t ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<LogRotate>>);
-
-template bool ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>::Name_Mnger::reserve(const std::string& name);
-template void ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>::Name_Mnger::set_key(const std::string& name, sinkkey_t key);
+  
+template void ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::done(sinkkey_t key);
+template g3::SinkHandle<LogRotate> * ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::access(sinkkey_t key);
+template sinkkey_t ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<LogRotate>>);
+template bool ifaceLogWorker::LogRotateSinkIface_t::Name_Mnger::reserve(const std::string& name);
+template void ifaceLogWorker::LogRotateSinkIface_t::Name_Mnger::set_key(const std::string& name, sinkkey_t key);
 
 
 } // g3
