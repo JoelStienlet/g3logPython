@@ -1,7 +1,6 @@
 #include <iostream>  
 #include <cassert>
 
-
 #include <future> 
 #include <mutex>
 #include <atomic>
@@ -19,7 +18,9 @@ namespace g3 {
 //   g3logSinkCls : g3::SyslogSink
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
 template<typename... Args>
-pySinkCls ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::new_Sink(const std::string& name, Args... args)
+pySinkCls 
+ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
+new_Sink(const std::string& name, Args... args)
 {   
 if(!_userNames.reserve(name)) { throw std::logic_error("new_Sink: name already reserved."); }
     
@@ -31,11 +32,10 @@ _userNames.set_key( name, key);
     
 return pySinkCls(singleton._instance.lock(), key);
 }
-    
-
+      
 // explicit instantiations:
-template SysLogSnkHndl ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>::new_Sink<const char*>(const std::string&, const char*);
-template LogRotateSnkHndl ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>::new_Sink<const std::string&, const std::string&>(const std::string&, const std::string&, const std::string&);    
+template SysLogSnkHndl ifaceLogWorker::SysLogSinkIface_t::new_Sink<const char*>(const std::string&, const char*);
+template LogRotateSnkHndl ifaceLogWorker::LogRotateSinkIface_t::new_Sink<const std::string&, const std::string&>(const std::string&, const std::string&, const std::string&);    
 
     
 // ====================================================================
