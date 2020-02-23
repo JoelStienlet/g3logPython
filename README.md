@@ -11,7 +11,16 @@ Unlicense license
 python3 setup.py install
 
 ## Example
-TODO
+See the Examples directory for more advanced usage.
+
+```python
+#!/usr/bin/env python3
+import g3logPython as log
+logger = log.get_ifaceLogWorker(False)
+journaldSink = logger.SysLogSinks.new_Sink("journald","id=g3logPython")
+journaldSink.echoToStderr()
+log.debug("hello world!")
+```
 
 ## Technical aspects
 ### Object lifetime

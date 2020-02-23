@@ -6,10 +6,19 @@
 
 #pragma once
 
-#include <memory>
-#include <map>
-#include <set>
+#include <g3log/g3log.hpp>
+#include <g3log/logworker.hpp>
+#include "g3log/loglevels.hpp"
+
+#include "g3sinks/syslogsink.hpp"
+#include "g3sinks/LogRotate.h"
+
 #include <climits>
+
+#include <iostream>
+#include <map>
+#include <memory>
+#include <set>
 
 namespace g3 {
     
@@ -24,11 +33,6 @@ std::shared_ptr<ifaceLogWorker> getifaceLogWorker();
 // for the sink std::maps :
 typedef unsigned int sinkkey_t;
 #define InvalidSinkKey (0)
-
-// typedefs of message mover functions:
-typedef void (g3::SyslogSink::* g3logMsgMvrcall_t)(g3::LogMessageMover) ;
-typedef void (LogRotate::* g3logRotateMsgMvrcall_t)(std::string) ;
-
 
 
 // This class is providing a common (py & c++) interface for the unique g3log logger instance.
@@ -117,11 +121,15 @@ public:
       
     }; // class SinkHndlAccess
     
-    
+  // typedefs of message mover functions:
+  typedef void (g3::SyslogSink::* SyslogMvr_t)(g3::LogMessageMover) ;
+  typedef void (LogRotate::* LogRotateMvr_t)(std::string) ;
+  // types for the specialized sink interfaces of ifaceLogWorker:
+  using SysLogSinkIface_t = ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, SyslogMvr_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>;
+  using LogRotateSinkIface_t = ifaceLogWorker::SinkHndlAccess<LogRotate, LogRotateMvr_t, &LogRotate::save, g3::LogRotateSnkHndl>;
+  
 public:
-   
-  using SysLogSinkIface_t = ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, g3logMsgMvrcall_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>;
-  using LogRotateSinkIface_t = ifaceLogWorker::SinkHndlAccess<LogRotate, g3logRotateMsgMvrcall_t, &LogRotate::save, g3::LogRotateSnkHndl>;
+
   // Interfaces to the sinks.
   // each sink type has its own interface class here.
   // Access is thread safe, but contains locks.

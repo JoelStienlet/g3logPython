@@ -31,6 +31,7 @@ ext_modules = [
             get_pybind_include(),
             get_pybind_include(user=True),
             '/usr/local/lib',
+            '/usr/local/include/',
         ],
         libraries=['stdc++','g3logger','g3logrotate','g3log_syslog'],
         extra_compile_args=["-std=c++14", "-v","-fPIC"],

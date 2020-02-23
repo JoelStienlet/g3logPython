@@ -1,15 +1,6 @@
-#include <iostream>  
-#include <cassert>
 
-#include <future> 
-#include <mutex>
-#include <atomic>
-#include <g3log/g3log.hpp>
-#include <g3log/logworker.hpp>
-#include "/usr/local/include/g3sinks/syslogsink.hpp"
-#include "/usr/local/include/g3sinks/LogRotate.h"
+#include "intern_log.h"
 #include "g3logPython.h"
-
 
 namespace g3 {
     

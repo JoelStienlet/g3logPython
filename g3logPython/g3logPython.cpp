@@ -1,18 +1,8 @@
 
-#include <iostream>  
-
-#include <mutex>
-#include <atomic>
-#include <g3log/g3log.hpp>
-#include <g3log/logworker.hpp>
-#include "g3log/loglevels.hpp"
-#include "/usr/local/include/g3sinks/syslogsink.hpp"
-#include "/usr/local/include/g3sinks/LogRotate.h"
-#include "g3logPython.h"
 #include "intern_log.h"
+#include "g3logPython.h"
 
 #include <pybind11/pybind11.h>
-
 
 PYBIND11_MODULE(_g3logPython, m)
 {

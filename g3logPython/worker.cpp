@@ -1,13 +1,6 @@
-#include <iostream>  
 
-#include <mutex>
-#include <atomic>
-#include <g3log/g3log.hpp>
-#include <g3log/logworker.hpp>
-#include "/usr/local/include/g3sinks/syslogsink.hpp"
-#include "/usr/local/include/g3sinks/LogRotate.h"
+#include "intern_log.h"
 #include "g3logPython.h"
-
 
 namespace g3 {
     
@@ -136,14 +129,8 @@ Name_Mnger::set_key(const std::string& name, sinkkey_t key)
 //
 // explicit instantiations:
 //
+
 // explicit instantiation of Syslog:
-// < class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls >
-// Ex:
-//     classg3logSinkCls    --> g3::SyslogSink
-//     typename ClbkType    --> g3logMsgMvrcall_t
-//     ClbkType g3logMsgMvr --> &g3::SyslogSink::syslog
-//     class pySinkCls      --> SysLogSnkHndl 
-//
 
 template void ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::done(sinkkey_t key);
 template g3::SinkHandle<g3::SyslogSink> * ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::access(sinkkey_t key);
@@ -152,14 +139,6 @@ template bool ifaceLogWorker::SysLogSinkIface_t::Name_Mnger::reserve(const std::
 template void ifaceLogWorker::SysLogSinkIface_t::Name_Mnger::set_key(const std::string& name, sinkkey_t key);
 
 // explicit instantiation of LogRotate:
-
-// < class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls >
-// Ex:
-//     classg3logSinkCls    --> LogRotate
-//     typename ClbkType    --> g3logRotateMsgMvrcall_t
-//     ClbkType g3logMsgMvr --> &LogRotate::save
-//     class pySinkCls      --> LogRotateSnkHndl 
-//
   
 template void ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::done(sinkkey_t key);
 template g3::SinkHandle<LogRotate> * ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::access(sinkkey_t key);

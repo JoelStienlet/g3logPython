@@ -1,18 +1,6 @@
-#include <iostream>  
 
-
-
-
-#include <mutex>
-#include <atomic>
-#include <g3log/g3log.hpp>
-#include <g3log/logworker.hpp>
-#include "g3log/loglevels.hpp"
-#include <g3log/logcapture.hpp>
-#include "/usr/local/include/g3sinks/syslogsink.hpp"
-#include "/usr/local/include/g3sinks/LogRotate.h"
-#include "g3logPython.h"
 #include "intern_log.h"
+#include "g3logPython.h"
 
 // level_val : enum pyLEVEL
 void g3::receivelog(const char *file, int line, const char* functionname, int level_val, const char *message)
