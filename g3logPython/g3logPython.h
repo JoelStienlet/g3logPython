@@ -2,6 +2,10 @@
 
   Python wrapper for g3log
 
+On fedora 32:
+   python3-pybind11
+   python3-devel
+
 */
 
 #pragma once
@@ -10,10 +14,11 @@
 #include <g3log/logworker.hpp>
 #include "g3log/loglevels.hpp"
 
-#include "g3sinks/syslogsink.hpp"
-#include "g3sinks/LogRotate.h"
+#include <src/g3log/syslogsink.hpp>
+#include <g3sinks/LogRotate.h>
 
 #include <climits>
+
 
 #include <iostream>
 #include <map>
@@ -34,6 +39,7 @@ std::shared_ptr<ifaceLogWorker> getifaceLogWorker();
 typedef unsigned int sinkkey_t;
 #define InvalidSinkKey (0)
 
+class ThdStore;
 
 // This class is providing a common (py & c++) interface for the unique g3log logger instance.
 // note that this is a singleton (as there's only one g3log instance) 
@@ -150,6 +156,8 @@ public:
   ifaceLogWorker &operator=(const ifaceLogWorker &) = delete;
   //~ifaceLogWorker() {std::cerr << "ifaceLogWorker deleted" << std::endl;};
         
+    ThdStore Store; // TODO : make it private : proxy it somehow
+  
 private:
   ifaceLogWorker() = default;
   static struct  sglt_t{
@@ -165,6 +173,8 @@ private:
     } singleton;
     
   std::unique_ptr<LogWorker> worker;
+  
+
 };
   
     

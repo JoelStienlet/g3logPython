@@ -44,7 +44,20 @@ g3::SinkHandle<g3::SyslogSink> * p_g3_hndl = _p_wrkrKeepalive -> SysLogSinks._g3
 
 try 
   {
-    p_g3_hndl -> call(&g3::SyslogSink::setLogHeaderNoJn, g3::DltrStr(change)); //         
+// Create a class to store the data, inheriting from the specialization of StoredForThd<> (future return type)
+//      class HdrStore: public StoredForThd<void>
+//      {
+//      public:
+//          HdrStore() = delete;
+//          HdrStore(std::string init): HdrStr(init) {};
+//          const char *c_str() {return HdrStr.c_str();};
+//      private:
+//          std::string HdrStr;
+//      };
+     auto p_HdrData = std::make_shared<Helper1StrStore> (change);
+     p_HdrData -> set_future(p_g3_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()));
+     _p_wrkrKeepalive -> Store.store(p_HdrData);
+    
   } catch (...) {
     _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
     throw;
@@ -62,8 +75,11 @@ if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity ba
 g3::SinkHandle<g3::SyslogSink> * p_g3_hndl = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
 
 try 
-  {
-    (p_g3_hndl -> call)(&g3::SyslogSink::setIdentityNoJn, g3::DltrStr(id) ); 
+  {   
+     auto p_IdData = std::make_shared<Helper1StrStore> (id);
+     p_IdData -> set_future(p_g3_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()));
+     _p_wrkrKeepalive -> Store.store(p_IdData);
+    
   } catch (...) {
     _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
     throw;
@@ -80,7 +96,7 @@ if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity ba
 g3::SinkHandle<g3::SyslogSink> * p_g3_hndl = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
 try 
   {
-    p_g3_hndl -> call(&g3::SyslogSink::echoToStderr);
+    p_g3_hndl -> call(&g3::SyslogSink::echoToStderr); // TODO : add to store !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   } catch (...) {
     _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
     throw;
