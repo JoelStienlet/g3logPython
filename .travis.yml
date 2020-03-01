@@ -1,0 +1,12 @@
+sudo: required
+dist: bionic
+
+matrix:
+  include:
+    - language: python
+      python: 3.6
+      script:
+        - bash scripts/BuildAndRunTests.sh
+
+    - language: cpp
+      compiler: gcc
