@@ -6,3 +6,5 @@ compiler: gcc
 
 install: ./scripts/install-dependencies.sh
 
+script: ./scripts/BuildAndRunTests.sh
+
