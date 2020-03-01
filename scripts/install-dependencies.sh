@@ -2,6 +2,8 @@
 
 pwd=`pwd`
 
+#sudo apt --fix-broken install
+sudo apt-get update
 sudo apt-get install -y libboost-all-dev python3-dev pybind11-dev
 
 
