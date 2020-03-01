@@ -2,7 +2,7 @@
 
 pwd=`pwd`
 
-sudo apt-get install libboost-all-dev python3-dev pybind11-dev
+sudo apt-get install libboost-all-dev libboost-filesystem-dev python3-dev pybind11-dev
 
 
 mkdir g3log-install && cd g3log-install
