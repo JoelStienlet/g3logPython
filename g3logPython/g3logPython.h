@@ -14,7 +14,8 @@ On fedora 32:
 #include <g3log/logworker.hpp>
 #include "g3log/loglevels.hpp"
 
-#include <src/g3log/syslogsink.hpp>
+// #include <src/g3log/syslogsink.hpp>
+#include <g3sinks/syslogsink.hpp>
 #include <g3sinks/LogRotate.h>
 
 #include <climits>
