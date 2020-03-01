@@ -4,8 +4,9 @@ pwd=`pwd`
 
 #sudo apt --fix-broken install
 sudo apt-get update
-sudo apt-get install -y libboost-all-dev python3-dev python3-pybind11 python3-setuptools
-
+sudo apt-get install -y libboost-all-dev python3-setuptools python3-pip python3-dev
+#  python3-pybind11  <-- does not work: PYBIND11_MODULE causes syntax errors...
+# see https://github.com/pybind/pybind11/issues/890#issuecomment-544160220
 
 mkdir g3log-install && cd g3log-install
 git clone https://github.com/KjellKod/g3log.git -b master
@@ -25,4 +26,10 @@ mkdir -p  build_travis
 cd build_travis
 cmake ..
 make -j && sudo make install
+
+
+cd $pwd
+git clone https://github.com/pybind/pybind11.git
+cd pybind11
+sudo pip3 install .
 
