@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
-pwd=`pwd`
-echo "$pwd"
+pwd
 ls -al
+cd g3logPython
+pwd
+ls -al
+
 
 for filename in `find . | egrep '\.cpp'`;
 do
