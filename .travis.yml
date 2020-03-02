@@ -8,3 +8,7 @@ install: ./scripts/install-dependencies.sh
 
 script: ./scripts/BuildAndRunTests.sh
 
+after-success:
+  - ./scripts/coverage.sh
+
+

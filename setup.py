@@ -34,7 +34,7 @@ ext_modules = [
             '/usr/local/include/',
         ],
         libraries=['stdc++','g3logger','g3logrotate','g3log_syslog'],
-        extra_compile_args=["-std=c++14", "-v","-fPIC"],
+        extra_compile_args=["-std=c++14", "-v", "-O0", "-fPIC", "-fprofile-arcs", "-ftest-coverage"],
         language='c++'
     ),
 ]
