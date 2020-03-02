@@ -9,12 +9,13 @@ print("g3logPython imported")
 logger = g3logPython.get_ifaceLogWorker(False)
 journaldSink = logger.SysLogSinks.new_Sink("journald","id=g3log")
 logrotateSink = logger.LogRotateSinks.new_Sink("log rotate","py_g3logTest","/tmp/")
+colorTermSink = logger.ClrTermSinks.new_Sink("color term")
 
 print("loggers created")
 
 journaldSink.setLogHeader("========== TEST HEADER ==========")
 
-journaldSink.echoToStderr()
+#journaldSink.echoToStderr()
 
 logrotateSink.setMaxArchiveLogCount(10)
 

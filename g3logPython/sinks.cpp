@@ -24,11 +24,16 @@ _userNames.set_key( name, key);
 return pySinkCls(singleton._instance.lock(), key);
 }
       
-// explicit instantiations:
+// explicit instantiations: (see also worker.cpp)
+template ClrTermSnkHndl ifaceLogWorker::ClrTermSinkIface_t::new_Sink<>(const std::string&);
 template SysLogSnkHndl ifaceLogWorker::SysLogSinkIface_t::new_Sink<const char*>(const std::string&, const char*);
 template LogRotateSnkHndl ifaceLogWorker::LogRotateSinkIface_t::new_Sink<const std::string&, const std::string&>(const std::string&, const std::string&, const std::string&);    
 
     
+// ====================================================================
+// =========================== Color Term  ============================
+// ====================================================================
+
 // ====================================================================
 // =========================== SysLog  ================================
 // ====================================================================

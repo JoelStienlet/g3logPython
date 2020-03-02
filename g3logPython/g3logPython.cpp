@@ -19,6 +19,9 @@ pybind11::class_<g3::SysLogSnkHndl>(m, "SysLogSnkHndl")
 pybind11::class_<g3::LogRotateSnkHndl>(m, "LogRotateSnkHndl")
     .def("setMaxArchiveLogCount", &g3::LogRotateSnkHndl::setMaxArchiveLogCount);
     
+pybind11::class_<g3::ClrTermSnkHndl>(m, "ClrTermSnkHndl");
+    
+
 pybind11::class_<g3::ifaceLogWorker::SysLogSinkIface_t>(m, "SysLogSinkHndlAccess")
     .def("new_Sink", 
          &g3::ifaceLogWorker::SysLogSinkIface_t::new_Sink<const char*>,
@@ -29,6 +32,11 @@ pybind11::class_<g3::ifaceLogWorker::LogRotateSinkIface_t>(m, "LogRotateSinkHndl
          &g3::ifaceLogWorker::LogRotateSinkIface_t::new_Sink<const std::string&, const std::string&>,
          "creates a LogRotate sink");
     
+pybind11::class_<g3::ifaceLogWorker::ClrTermSinkIface_t>(m, "ClrTermSinkHndlAccess")
+    .def("new_Sink", 
+         &g3::ifaceLogWorker::ClrTermSinkIface_t::new_Sink<>,
+         "creates a colorTerm sink");
+    
 pybind11::class_<g3::ifaceLogWorker, std::shared_ptr<g3::ifaceLogWorker>>(m, "ifaceLogWorker")
     .def_readonly("SysLogSinks", 
                   &g3::ifaceLogWorker::SysLogSinks, 
@@ -37,8 +45,12 @@ pybind11::class_<g3::ifaceLogWorker, std::shared_ptr<g3::ifaceLogWorker>>(m, "if
     .def_readonly("LogRotateSinks", 
                   &g3::ifaceLogWorker::LogRotateSinks, 
                   "LogRotate handle manager", 
+                  pybind11::return_value_policy::reference_internal)
+    .def_readonly("ClrTermSinks", 
+                  &g3::ifaceLogWorker::ClrTermSinks, 
+                  "ColorTerm handle manager", 
                   pybind11::return_value_policy::reference_internal);
-       
+    
 m.def("get_ifaceLogWorker", 
       &g3::ifaceLogWorker::get_ifaceLogWorker, 
       "access the log worker instance", 

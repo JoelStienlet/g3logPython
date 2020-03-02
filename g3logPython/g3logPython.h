@@ -17,6 +17,7 @@ On fedora 32:
 // #include <src/g3log/syslogsink.hpp>
 #include <g3sinks/syslogsink.hpp>
 #include <g3sinks/LogRotate.h>
+#include "ColorTermSink.h"
 
 #include <climits>
 
@@ -33,6 +34,8 @@ class ifaceLogWorker;
 // handles for the sinks:
 class SysLogSnkHndl;
 class LogRotateSnkHndl;
+class ClrTermSnkHndl;
+
 // singleton interface to g3log:
 std::shared_ptr<ifaceLogWorker> getifaceLogWorker();
 
@@ -142,6 +145,8 @@ public:
       
       friend class SysLogSnkHndl;
       friend class LogRotateSnkHndl; 
+      friend class ClrTermSnkHndl; 
+      
       Ptr_Mnger _g3logPtrs;
       Name_Mnger _userNames;
       
@@ -150,9 +155,12 @@ public:
   // typedefs of message mover functions:
   typedef void (g3::SyslogSink::* SyslogMvr_t)(g3::LogMessageMover) ;
   typedef void (LogRotate::* LogRotateMvr_t)(std::string) ;
+  typedef void (g3::ColorTermSink::* ClrTermMvr_t)(g3::LogMessageMover) ;
+  
   // types for the specialized sink interfaces of ifaceLogWorker:
   using SysLogSinkIface_t = ifaceLogWorker::SinkHndlAccess<g3::SyslogSink, SyslogMvr_t, &g3::SyslogSink::syslog, g3::SysLogSnkHndl>;
   using LogRotateSinkIface_t = ifaceLogWorker::SinkHndlAccess<LogRotate, LogRotateMvr_t, &LogRotate::save, g3::LogRotateSnkHndl>;
+  using ClrTermSinkIface_t = ifaceLogWorker::SinkHndlAccess<g3::ColorTermSink, ClrTermMvr_t, &g3::ColorTermSink::ReceiveLogMessage, g3::ClrTermSnkHndl>;
   
 public:
 
@@ -161,7 +169,8 @@ public:
   // Access is thread safe, but contains locks.
   SysLogSinkIface_t SysLogSinks;
   LogRotateSinkIface_t LogRotateSinks;
-
+  ClrTermSinkIface_t ClrTermSinks;
+  
   // scope_lifetime on first call:
   //  - when set to false (default), the interface remains alive until the program exits. 
   //  - when set to true, the interface will be destoyed when the user releases his last shared_ptr. 
@@ -210,6 +219,7 @@ public:
 private:
   friend class SysLogSnkHndl;    // gives access to the private constructor
   friend class LogRotateSnkHndl; 
+  friend class ClrTermSnkHndl;
   
   cmmnSinkHndl(std::shared_ptr<ifaceLogWorker> pworker, sinkkey_t key) : _p_wrkrKeepalive(pworker), _key(key) {};
   
@@ -279,5 +289,19 @@ private:
   
 }; // LogRotateSnkHndl  
 
+    
+    
+class ClrTermSnkHndl: private cmmnSinkHndl
+{
+public:
+  // Sink methods go here...
+public:
+  ClrTermSnkHndl() = delete;
+  ClrTermSnkHndl &operator=(const ClrTermSnkHndl &) = delete;
+  
+private:
+  friend ifaceLogWorker::ClrTermSinkIface_t;
+  ClrTermSnkHndl(std::shared_ptr<ifaceLogWorker> pworker, sinkkey_t key) : cmmnSinkHndl(pworker, key) {};
+}; // ClrTermSnkHndl   
     
 } // g3
