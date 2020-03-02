@@ -39,31 +39,13 @@ void SysLogSnkHndl::setLogHeader(const char* change)
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setLogHeader bad key");
 if(change == NULL) throw std::logic_error("SysLogSnkHndl::setLogHeader NULL header string");
 
-// note: locks a mutex! note: reader lock. TODO : reader writer lock TODO: RAII
-g3::SinkHandle<g3::SyslogSink> * p_g3_hndl = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
+auto p_HdrData = std::make_shared<Helper1StrStore> (change);
 
-try 
-  {
-// Create a class to store the data, inheriting from the specialization of StoredForThd<> (future return type)
-//      class HdrStore: public StoredForThd<void>
-//      {
-//      public:
-//          HdrStore() = delete;
-//          HdrStore(std::string init): HdrStr(init) {};
-//          const char *c_str() {return HdrStr.c_str();};
-//      private:
-//          std::string HdrStr;
-//      };
-     auto p_HdrData = std::make_shared<Helper1StrStore> (change);
-     p_HdrData -> set_future(p_g3_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()));
-     _p_wrkrKeepalive -> Store.store(p_HdrData);
-    
-  } catch (...) {
-    _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
-    throw;
+  { // raii mutex locking with access()
+    g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
+    p_HdrData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()));
   }
- 
-_p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
+_p_wrkrKeepalive -> Store.store(p_HdrData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 //
@@ -71,20 +53,13 @@ void SysLogSnkHndl::setIdentity(std::string& id)
 {   
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
-// note: locks a mutex! note: reader lock. TODO : reader writer lock TODO: RAII
-g3::SinkHandle<g3::SyslogSink> * p_g3_hndl = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
+auto p_IdData = std::make_shared<Helper1StrStore> (id);
 
-try 
-  {   
-     auto p_IdData = std::make_shared<Helper1StrStore> (id);
-     p_IdData -> set_future(p_g3_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()));
-     _p_wrkrKeepalive -> Store.store(p_IdData);
-    
-  } catch (...) {
-    _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
-    throw;
+  { // raii mutex locking with access() 
+     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
+     p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()));
   }
-_p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
+_p_wrkrKeepalive -> Store.store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 //
@@ -92,16 +67,11 @@ void SysLogSnkHndl::echoToStderr()
 {   
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
-// note: locks a mutex! note: reader lock. TODO : reader writer lock TODO: RAII
-g3::SinkHandle<g3::SyslogSink> * p_g3_hndl = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-try 
-  {
-    p_g3_hndl -> call(&g3::SyslogSink::echoToStderr); // TODO : add to store !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  } catch (...) {
-    _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
-    throw;
+  { // raii mutex locking with access()
+    g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
+    MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr); 
   }
-_p_wrkrKeepalive -> SysLogSinks._g3logPtrs.done(_key); // unlocks the mutex
+// TODO : add to store !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 }
 
 
@@ -117,7 +87,7 @@ void LogRotateSnkHndl::setMaxArchiveLogCount(int max_size)
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
 // note: locks a mutex! note: reader lock. TODO : reader writer lock TODO: RAII
-g3::SinkHandle<LogRotate> * p_g3_hndl = _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.access(_key);
+g3::SinkHandle<LogRotate> * p_g3_hndl = _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.accessTOREPLACE(_key);
 try 
   {
     p_g3_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size); 

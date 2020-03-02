@@ -42,6 +42,21 @@ typedef unsigned int sinkkey_t;
 
 class ThdStore;
 
+// manages an RAII mutex-protected raw pointer to g3log's handle
+// note: std::scoped_lock is not moveable
+template<typename Protected_t>
+class LockedObj {
+  public:
+    LockedObj() = delete;
+    LockedObj(const LockedObj&) = delete;
+    LockedObj(LockedObj &&to_move) noexcept: p_hndl(to_move.p_hndl), raiiLock(std::move(to_move.raiiLock)){};
+    LockedObj(std::mutex &to_lock): raiiLock(to_lock) {p_hndl = nullptr;};
+    Protected_t p_hndl;
+  private:
+    std::unique_lock<std::mutex> raiiLock;
+};
+
+
 // This class is providing a common (py & c++) interface for the unique g3log logger instance.
 // note that this is a singleton (as there's only one g3log instance) 
 class ifaceLogWorker
@@ -87,8 +102,12 @@ public:
         public:
           Ptr_Mnger(const Ptr_Mnger &) = delete;
           sinkkey_t insert(std::unique_ptr<g3::SinkHandle<g3logSinkCls>>); // lock + unlock of mutex
-          g3::SinkHandle<g3logSinkCls> *access(sinkkey_t key); // locks the mutex. call done() once finished to release it. TODO: RAII
+          
+          g3::SinkHandle<g3logSinkCls> *accessTOREPLACE(sinkkey_t key); // locks the mutex. call done() once finished to release it. TODO: RAII
           void done(sinkkey_t key); // unlocks the mutex locked by access().
+          
+          class g3::LockedObj<g3::SinkHandle<g3logSinkCls> *> access(sinkkey_t key);
+          
           void remove(sinkkey_t); // lock + unlock of mutex
           
         private:
