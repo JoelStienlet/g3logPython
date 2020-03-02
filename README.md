@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/JoelStienlet/g3logPython.svg?branch=master)](https://travis-ci.org/JoelStienlet/g3logPython)
 [![GitHub license](https://img.shields.io/badge/license-Unlicense-brightgreen)](https://github.com/JoelStienlet/g3logPython/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/JoelStienlet/g3logPython/branch/master/graph/badge.svg)](https://codecov.io/gh/JoelStienlet/g3logPython)
+[![Percentage of issues still open](http://isitmaintained.com/badge/open/JoelStienlet/g3logPython.svg)](http://isitmaintained.com/project/JoelStienlet/g3logPython "Percentage of issues still open")
 
 # g3logPython
 Python bindings for [g3log](https://github.com/KjellKod/g3log.git)
