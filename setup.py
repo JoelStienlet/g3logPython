@@ -1,4 +1,5 @@
 import setuptools
+import os
 
 # see https://github.com/pybind/python_example/blob/master/setup.py
 
@@ -21,6 +22,23 @@ class get_pybind_include(object):
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+
+# example: sudo BUILD_WITH_COVERAGE=1 python3 setup.py install
+compile_args=["-std=c++14", "-v", "-fPIC"]
+link_args=[]
+env_var_name = "BUILD_WITH_COVERAGE"
+cov_env_val = os.environ.get( env_var_name, None )
+if cov_env_val is not None:
+    print("BUILD_WITH_COVERAGE = ", cov_env_val)
+    if cov_env_val == "1":
+        print("code coverage enabled")
+        compile_args.extend(["-O0", "-fprofile-arcs", "-ftest-coverage"])
+        link_args.extend(["-lgcov"])
+else:
+    print("no ",env_var_name," environment variable found")
+
+
+
 # https://docs.python.org/3/distutils/setupscript.html#describing-extension-modules
 ext_modules = [
     setuptools.Extension(
@@ -34,7 +52,8 @@ ext_modules = [
             '/usr/local/include/',
         ],
         libraries=['stdc++','g3logger','g3logrotate','g3log_syslog'],
-        extra_compile_args=["-std=c++14", "-v", "-O0", "-fPIC", "-fprofile-arcs", "-ftest-coverage"],
+        extra_compile_args=compile_args,
+        extra_link_args=link_args,
         language='c++'
     ),
 ]
