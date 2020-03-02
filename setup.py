@@ -32,7 +32,7 @@ if cov_env_val is not None:
     print("BUILD_WITH_COVERAGE = ", cov_env_val)
     if cov_env_val == "1":
         print("code coverage enabled")
-        compile_args.extend(["-O0", "-fprofile-arcs", "-ftest-coverage"])
+        compile_args.extend(["-O0", "-fprofile-arcs", "-ftest-coverage", "-fno-inline", "-fno-inline-small-functions", "-fno-default-inline"])
         link_args.extend(["-lgcov"])
 else:
     print("no ",env_var_name," environment variable found")
