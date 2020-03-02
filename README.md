@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/JoelStienlet/g3logPython.svg?branch=master)](https://travis-ci.org/JoelStienlet/g3logPython)
-[![GitHub license](https://img.shields.io/badge/license-public%20domain-brightgreen)](https://github.com/JoelStienlet/g3logPython/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-public domain-brightgreen)](https://github.com/JoelStienlet/g3logPython/blob/master/LICENSE)
 
 # g3logPython
 Python bindings for [g3log](https://github.com/KjellKod/g3log.git)
