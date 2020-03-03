@@ -43,7 +43,7 @@ else:
 ext_modules = [
     setuptools.Extension(
         '_g3logPython',
-        ['g3logPython/ColorTermSink.cpp', 'g3logPython/g3logPython.cpp', 'g3logPython/sinks.cpp', 'g3logPython/worker.cpp', 'g3logPython/log.cpp'],
+        ['g3logPython/store.cpp', 'g3logPython/ColorTermSink.cpp', 'g3logPython/g3logPython.cpp', 'g3logPython/sinks.cpp', 'g3logPython/worker.cpp', 'g3logPython/log.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),

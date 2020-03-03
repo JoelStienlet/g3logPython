@@ -20,42 +20,13 @@ enum class pyLEVEL : int
 };
 
 
-
-// TODO   TO REMOVE once the generic manager in place //////////////////////
-// RAII string type with its deleter (Dltr) included to cross library boundaries 
-class DltrStr
-{
-public:
-    DltrStr() = delete;
-    // the deleter accompanies the memory block to enable it beeing freed in the library (using a different heap, as on Windows):
-    DltrStr(const char * content) {
-        size_t len = strlen(content);
-        _content = (char *)malloc(len + 1); //std::shared_ptr<char>(new char[len + 1], [](char *b){ delete[](b);} );
-        memcpy(_content, content, len+1); };
-        
-    DltrStr(const std::string& content) {
-        size_t len = content.length();
-        _content = (char *)malloc(len + 1); // std::shared_ptr<char>(new char[len + 1], [](char *b){ delete[](b);} );
-        memcpy(_content, content.c_str(), len+1); };
-        
-    const char *c_str() {return _content;};
-    
-private:
-    //std::shared_ptr<char> _content;
-    char *_content;
-};
-
-
 // ------------------------------------------------------------------------------
 
 
 
 class StoredIface;
 //
-// To solve the problem of lifetime when passing data to g3log threads
-// The data have to stay alive until the thread has finished.
-// The idea is to make a deep-copy of the data, and store them here
-// until the thread has finished.
+// See explanations in "store.cpp"
 // 
 // This class works together with the class StoredForThd.
 //
@@ -63,15 +34,16 @@ class ThdStore
 {
 public:
    void store(std::shared_ptr<StoredIface>&& p_newData) {
-        const std::lock_guard<std::mutex> lock(_ShdLstLck);
+        std::lock_guard<std::mutex> lock(_ShdLstLck);
         // TODO: check if memory barrier is inserted automatically
         _SharedList.push_back(p_newData);
       }
     
-private:    
+    ThdStore(): terminate_thd(false) {start_thread();};
+    ~ThdStore() {sendTerm_n_join();};
     
-  void join(){}; // TODO: join the cleanup-thread
-  
+private:    
+      
   // we make two lists: 
   // - one list shared between threads, protected by a mutex.
   // - one list that can only be accessed by the cleanup-thread
@@ -80,6 +52,13 @@ private:
   std::mutex _ShdLstLck; // for _SharedList
   std::list<std::shared_ptr<StoredIface>> _SharedList;
   std::list<std::shared_ptr<StoredIface>> _CleanupList;
+ 
+  // for the cleanup-thread:
+  void start_thread();
+  void sendTerm_n_join(); // ask the cleanup thread to terminate and wait until he has finished.
+  std::atomic<bool> terminate_thd; // flag to pass the termination order to the thread
+  void ThdWorker();
+  std::thread cleanupThd;
 };
 
 //
