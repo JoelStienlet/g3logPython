@@ -72,11 +72,13 @@ void SysLogSnkHndl::echoToStderr()
 {   
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
+auto p_IdData = std::make_shared<StoredForThd<void>> ();
+
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-    MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr); 
+    p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr)); 
   }
-// TODO : add to store !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+_p_wrkrKeepalive -> Store.store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 
@@ -91,16 +93,13 @@ void LogRotateSnkHndl::setMaxArchiveLogCount(int max_size)
 {
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
-// note: locks a mutex! note: reader lock. TODO : reader writer lock TODO: RAII
-g3::SinkHandle<LogRotate> * p_g3_hndl = _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.accessTOREPLACE(_key);
-try 
-  {
-    p_g3_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size); 
-  } catch (...) {
-    _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.done(_key); // unlocks the mutex
-    throw;
+auto p_IdData = std::make_shared<StoredForThd<void>> (); // nothing to store, as the data (max_size) is a simple int
+
+  { // raii mutex locking with access()
+    g3::LockedObj<g3::SinkHandle<LogRotate> *> MtxPtr = _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.access(_key);
+    p_IdData -> set_future(MtxPtr.p_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size)); 
   }
-_p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.done(_key); // unlocks the mutex
+_p_wrkrKeepalive -> Store.store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 

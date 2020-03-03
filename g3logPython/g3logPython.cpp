@@ -6,6 +6,7 @@
 
 PYBIND11_MODULE(_g3logPython, m)
 {
+
 m.attr("g3DEBUG")   = pybind11::int_((int)g3::pyLEVEL::pyDEBUG);
 m.attr("g3INFO")    = pybind11::int_((int)g3::pyLEVEL::pyINFO);
 m.attr("g3WARNING") = pybind11::int_((int)g3::pyLEVEL::pyWARNING);

@@ -15,7 +15,7 @@ print("loggers created")
 
 journaldSink.setLogHeader("========== TEST HEADER ==========")
 
-#journaldSink.echoToStderr()
+journaldSink.echoToStderr()
 
 logrotateSink.setMaxArchiveLogCount(10)
 

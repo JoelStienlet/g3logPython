@@ -1,10 +1,8 @@
- 
-#from inspect import stack
+
 import sys
 import inspect
 from functools import partial
 from _g3logPython import *
-
 
 def g3log(level, message):
     try:
