@@ -40,7 +40,7 @@ _instance.lock() -> worker = g3::LogWorker::createLogWorker();
 g3::initializeLogging(_instance.lock() -> worker.get());
 }
    
-    
+/*    
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
 g3::SinkHandle<g3logSinkCls> * 
 ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
@@ -53,7 +53,7 @@ Ptr_Mnger::accessTOREPLACE(sinkkey_t key)
   if(naked == NULL)  throw std::logic_error("Ptr_Mnger::access null in map");
   return naked;
 }
-   
+   */
 
 template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
 void 
@@ -147,7 +147,7 @@ Name_Mnger::set_key(const std::string& name, sinkkey_t key)
 // explicit instantiation of Syslog:
 
 template void ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::done(sinkkey_t key);
-template g3::SinkHandle<g3::SyslogSink> * ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::accessTOREPLACE(sinkkey_t key);
+//template g3::SinkHandle<g3::SyslogSink> * ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::accessTOREPLACE(sinkkey_t key);
 template g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::access(sinkkey_t key);
 
 template sinkkey_t ifaceLogWorker::SysLogSinkIface_t::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<g3::SyslogSink>>);
@@ -157,7 +157,7 @@ template void ifaceLogWorker::SysLogSinkIface_t::Name_Mnger::set_key(const std::
 // explicit instantiation of LogRotate:
   
 template void ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::done(sinkkey_t key);
-template g3::SinkHandle<LogRotate> * ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::accessTOREPLACE(sinkkey_t key);
+//template g3::SinkHandle<LogRotate> * ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::accessTOREPLACE(sinkkey_t key);
 template g3::LockedObj<g3::SinkHandle<LogRotate> *> ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::access(sinkkey_t key);
 
 template sinkkey_t ifaceLogWorker::LogRotateSinkIface_t::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<LogRotate>>);
@@ -168,7 +168,7 @@ template void ifaceLogWorker::LogRotateSinkIface_t::Name_Mnger::set_key(const st
 // explicit instantiation of ColorTerm:
 
 template void ifaceLogWorker::ClrTermSinkIface_t::Ptr_Mnger::done(sinkkey_t key);
-template g3::SinkHandle<g3::ColorTermSink> * ifaceLogWorker::ClrTermSinkIface_t::Ptr_Mnger::accessTOREPLACE(sinkkey_t key);
+//template g3::SinkHandle<g3::ColorTermSink> * ifaceLogWorker::ClrTermSinkIface_t::Ptr_Mnger::accessTOREPLACE(sinkkey_t key);
 template g3::LockedObj<g3::SinkHandle<g3::ColorTermSink> *> ifaceLogWorker::ClrTermSinkIface_t::Ptr_Mnger::access(sinkkey_t key);
 
 template sinkkey_t ifaceLogWorker::ClrTermSinkIface_t::Ptr_Mnger::insert(std::unique_ptr<g3::SinkHandle<g3::ColorTermSink>>);

@@ -15,7 +15,12 @@ new_Sink(const std::string& name, Args... args)
 {   
 if(!_userNames.reserve(name)) { throw std::logic_error("new_Sink: name already reserved."); }
     
-auto sink = std::make_unique<g3logSinkCls>(std::forward<Args>(args)...);
+// Problem: args are destroyed by python whenever it pleases it...
+// so we have to copy the args and store them until the program finishes.
+//auto sink = std::make_unique<g3logSinkCls>(std::forward<Args>(args)...); <-- we cannot simply forward the args
+// https://stackoverflow.com/questions/47848910/apply-function-on-each-element-in-parameter-pack
+auto sink = std::make_unique<g3logSinkCls>(store(std::forward<Args>(args))...);
+
 std::unique_ptr<g3::SinkHandle<g3logSinkCls>> g3logHndl(singleton._instance.lock() -> worker.get() -> addSink( std::move(sink), g3logMsgMvr));
     
 sinkkey_t key = _g3logPtrs.insert(std::move(g3logHndl));

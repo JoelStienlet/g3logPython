@@ -6,8 +6,9 @@
 # g3logPython
 Python bindings for [g3log](https://github.com/KjellKod/g3log.git)
 
-This library provides python bindings for g3log + g3sinks (currently logrotate, syslog, and a color-terminal output).
+This library provides python3 bindings for g3log + g3sinks (currently logrotate, syslog, and a color-terminal output).
 Calls can be made both from python and C++, retaining the thread-safety of g3log.
+The advantage is that you can use the same logger both in c++ and python parts of a multi-language project.
 
 ## License
 Unlicense license

@@ -20,7 +20,7 @@ On fedora 32:
 #include "ColorTermSink.h"
 
 #include <climits>
-
+#include <cstring>
 
 #include <iostream>
 #include <map>
@@ -106,7 +106,7 @@ public:
           Ptr_Mnger(const Ptr_Mnger &) = delete;
           sinkkey_t insert(std::unique_ptr<g3::SinkHandle<g3logSinkCls>>); // lock + unlock of mutex
           
-          g3::SinkHandle<g3logSinkCls> *accessTOREPLACE(sinkkey_t key); // locks the mutex. call done() once finished to release it. TODO: RAII
+          //g3::SinkHandle<g3logSinkCls> *accessTOREPLACE(sinkkey_t key); // locks the mutex. call done() once finished to release it. TODO: RAII
           void done(sinkkey_t key); // unlocks the mutex locked by access().
           
           class g3::LockedObj<g3::SinkHandle<g3logSinkCls> *> access(sinkkey_t key);
@@ -150,6 +150,31 @@ public:
       Ptr_Mnger _g3logPtrs;
       Name_Mnger _userNames;
       
+      // parameter storage for sink creation:
+      // better be explicit about storage, so I let
+      // this template for information only:
+      //template<typename T, typename U=T>
+      //U store(T&& dat) {return std::forward<T>(dat);};
+          
+      // simply copy the data
+      std::string store(std::string content) {
+          //std::cerr << "string  STORE CALLED" << std::endl;
+          return std::string(content);
+          };
+          
+      // copy the data manually, and keep ownership until the end of the program.
+      // not that bad, because you usually don't add a huge number of sinks, and these are
+      // stored only on sink creation.
+      // TODO: remove memory leak
+      const char * store(const char *content) {
+          //std::cerr << "const char * STORE CALLED" << content << std::endl;
+          size_t len = strlen(content);
+          char* persist = new char[len + 1];
+          memcpy(persist, content, len+1);
+          return persist;
+         }
+         
+      
     }; // class SinkHndlAccess
     
   // typedefs of message mover functions:
@@ -167,7 +192,7 @@ public:
   // Interfaces to the sinks.
   // each sink type has its own interface class here.
   // Access is thread safe, but contains locks.
-  SysLogSinkIface_t SysLogSinks;
+  SysLogSinkIface_t SysLogSinks; // TODO VERY URGENT : don't allow creation of more than one syslog sink TODO
   LogRotateSinkIface_t LogRotateSinks;
   ClrTermSinkIface_t ClrTermSinks;
   

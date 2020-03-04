@@ -12,10 +12,12 @@ journaldSink_2 = logger.SysLogSinks.new_Sink("journald_2","id=g3log_2")
 
 print("loggers created")
 
-journaldSink_1.setLogHeader("========== TEST HEADER 1 ==========")
 journaldSink_1.echoToStderr()
-journaldSink_2.setLogHeader("========== TEST HEADER 2 ==========")
 journaldSink_2.echoToStderr()
+
+journaldSink_1.setLogHeader("========== TEST HEADER 1 ==========")
+journaldSink_2.setLogHeader("========== TEST HEADER 2 ==========")
+
 
 print("logger configured")
 
