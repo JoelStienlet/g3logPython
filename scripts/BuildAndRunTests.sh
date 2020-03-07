@@ -13,8 +13,13 @@ cd Examples
 ./Two_Sinks.py
 cd $pwd
 cd Tests
-./_bad_level.py || { echo "ERROR return value"; true; }
-./same_Sink_type_twice.py || { echo "ERROR return value"; true; }
-./same_name_Error.py || { echo "ERROR return value"; true; }
+./journald_sink_check_journalctl.py
+./logrotate_two_directories.py
+# TODO : add valgrind here
+#valgrind --error-exitcode=1 --suppressions=/usr/share/doc/python3-devel/valgrind-python.supp python3 ./valgrind_journald.py
+./WARNING_bad_level.py
+./EXCEPT_same_name_Error.py
+./EXCEPT_journal_Sink_type_twice.py
 ./Fatal.py || { echo "ERROR return value"; true; }
+
 echo "Tests Finished."

@@ -20,7 +20,8 @@ make -j && sudo make install
 
 cd $pwd
 mkdir g3sinks-install && cd g3sinks-install
-git clone https://github.com/JoelStienlet/g3sinks.git -b top_level_cmake
+#git clone https://github.com/JoelStienlet/g3sinks.git -b top_level_cmake
+git clone https://github.com/KjellKod/g3sinks.git -b master
 cd g3sinks
 mkdir -p  build_travis
 cd build_travis

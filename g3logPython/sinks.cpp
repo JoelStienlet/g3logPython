@@ -12,13 +12,19 @@ template<typename... Args>
 pySinkCls 
 ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
 new_Sink(const std::string& name, Args... args)
-{   
-if(!_userNames.reserve(name)) { throw std::logic_error("new_Sink: name already reserved."); }
+{
+if( (_options & MULT_INSTANCES_ALLOWED) == 0) {
+    // some sinks may not allow to be instantiated multiple times, for example syslog.
+    if(_userNames.get_size() > 0) throw std::logic_error("new_Sink: this sink can only be instantiated once.");
+    }
     
+if(!_userNames.reserve(name)) { throw std::logic_error("new_Sink: name already reserved."); }
+        
 // Problem: args are destroyed by python whenever it pleases it...
 // so we have to copy the args and store them until the program finishes.
 //auto sink = std::make_unique<g3logSinkCls>(std::forward<Args>(args)...); <-- we cannot simply forward the args
 // https://stackoverflow.com/questions/47848910/apply-function-on-each-element-in-parameter-pack
+// NOTE: in practice, after PR
 auto sink = std::make_unique<g3logSinkCls>(store(std::forward<Args>(args))...);
 
 std::unique_ptr<g3::SinkHandle<g3logSinkCls>> g3logHndl(singleton._instance.lock() -> worker.get() -> addSink( std::move(sink), g3logMsgMvr));

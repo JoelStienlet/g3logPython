@@ -43,6 +43,11 @@ std::shared_ptr<ifaceLogWorker> getifaceLogWorker();
 typedef unsigned int sinkkey_t;
 #define InvalidSinkKey (0)
 
+enum SINK_HNDL_OPTIONS
+{
+MULT_INSTANCES_ALLOWED = 1,
+};
+
 class ThdStore;
 
 // manages an RAII mutex-protected raw pointer to g3log's handle
@@ -106,8 +111,8 @@ public:
           Ptr_Mnger(const Ptr_Mnger &) = delete;
           sinkkey_t insert(std::unique_ptr<g3::SinkHandle<g3logSinkCls>>); // lock + unlock of mutex
           
-          //g3::SinkHandle<g3logSinkCls> *accessTOREPLACE(sinkkey_t key); // locks the mutex. call done() once finished to release it. TODO: RAII
-          void done(sinkkey_t key); // unlocks the mutex locked by access().
+          //g3::SinkHandle<g3logSinkCls> *accessTOREPLACE(sinkkey_t key); // locks the mutex. call done() once finished to release it. 
+          //void done(sinkkey_t key); // unlocks the mutex locked by access().
           
           class g3::LockedObj<g3::SinkHandle<g3logSinkCls> *> access(sinkkey_t key);
           
@@ -130,6 +135,7 @@ public:
           void set_key(const std::string& name, sinkkey_t key); // lock + unlock of mutex
           sinkkey_t get_key(const std::string& name); // lock + unlock of mutex
           void remove(const std::string& name); // lock + unlock of mutex
+          size_t get_size(); // lock + unlock of mutex
         private:
           friend class ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>;
           Name_Mnger(){};
@@ -141,7 +147,9 @@ public:
     private:
           
       friend class ifaceLogWorker; // can only be constructed in ifaceLogWorker
-      SinkHndlAccess() {};
+      SinkHndlAccess(uint32_t options): _options(options) {};
+      
+      uint32_t _options; // bitmask (MULT_INSTANCES_ALLOWED...)
       
       friend class SysLogSnkHndl;
       friend class LogRotateSnkHndl; 
@@ -213,7 +221,7 @@ public:
     ThdStore Store; // TODO : make it private : proxy it somehow
   
 private:
-  ifaceLogWorker() = default;
+  ifaceLogWorker(): SysLogSinks(0), LogRotateSinks(MULT_INSTANCES_ALLOWED), ClrTermSinks(MULT_INSTANCES_ALLOWED) {};
   static struct  sglt_t{
       static std::once_flag initInstanceFlag;
       static std::once_flag killKeepaliveFlag;
@@ -269,7 +277,9 @@ public:
     
   void setLogHeader(const char* change);
   void echoToStderr(); // enables the Linux extension LOG_PERROR
-
+  
+// from syslog(3) : The argument ident in the call of openlog() is probably stored as-is. Thus, if the string it points to is changed, syslog() may start prepending the changed string, and if the string it points to ceases to exist, the results are undefined. 
+// --> we have to store the string in a long-term storage
   void setIdentity(std::string& id);
   void setFacility(int facility);
   void setOption(int option);
