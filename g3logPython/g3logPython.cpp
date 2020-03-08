@@ -1,6 +1,6 @@
 
-#include "intern_log.h"
-#include "g3logPython.h"
+//#include "intern_log.h"
+#include <g3logBindings/g3logBindings.h>
 
 #include <pybind11/pybind11.h>
 

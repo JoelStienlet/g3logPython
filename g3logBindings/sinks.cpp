@@ -1,6 +1,6 @@
 
 #include "intern_log.h"
-#include "g3logPython.h"
+#include "g3logBindings.h"
 
 namespace g3 {
     
@@ -19,13 +19,15 @@ if( (_options & MULT_INSTANCES_ALLOWED) == 0) {
     }
     
 if(!_userNames.reserve(name)) { throw std::logic_error("new_Sink: name already reserved."); }
-        
-// Problem: args are destroyed by python whenever it pleases it...
-// so we have to copy the args and store them until the program finishes.
-//auto sink = std::make_unique<g3logSinkCls>(std::forward<Args>(args)...); <-- we cannot simply forward the args
-// https://stackoverflow.com/questions/47848910/apply-function-on-each-element-in-parameter-pack
-// NOTE: in practice, after PR
-auto sink = std::make_unique<g3logSinkCls>(store(std::forward<Args>(args))...);
+       
+
+//   Problem: args are destroyed by python whenever it pleases it...
+//   so we have to copy the args and store them until the program finishes.
+//   auto sink = std::make_unique<g3logSinkCls>(std::forward<Args>(args)...); <-- we cannot simply forward the args
+//   https://stackoverflow.com/questions/47848910/apply-function-on-each-element-in-parameter-pack
+// NOTE: in practice, after PR --> store() no longer needed!
+// 
+auto sink = std::make_unique<g3logSinkCls>(std::forward<Args>(args)...);
 
 std::unique_ptr<g3::SinkHandle<g3logSinkCls>> g3logHndl(singleton._instance.lock() -> worker.get() -> addSink( std::move(sink), g3logMsgMvr));
     
@@ -61,7 +63,7 @@ auto p_HdrData = std::make_shared<Helper1StrStore> (change);
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
     p_HdrData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()));
   }
-_p_wrkrKeepalive -> Store.store(p_HdrData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+_p_wrkrKeepalive -> pStore.get() -> store(p_HdrData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 //
@@ -75,7 +77,7 @@ auto p_IdData = std::make_shared<Helper1StrStore> (id);
      g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
      p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()));
   }
-_p_wrkrKeepalive -> Store.store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+_p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 //
@@ -89,7 +91,7 @@ auto p_IdData = std::make_shared<StoredForThd<void>> ();
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
     p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr)); 
   }
-_p_wrkrKeepalive -> Store.store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+_p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 
@@ -110,7 +112,7 @@ auto p_IdData = std::make_shared<StoredForThd<void>> (); // nothing to store, as
     g3::LockedObj<g3::SinkHandle<LogRotate> *> MtxPtr = _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.access(_key);
     p_IdData -> set_future(MtxPtr.p_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size)); 
   }
-_p_wrkrKeepalive -> Store.store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+_p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 }
 
 

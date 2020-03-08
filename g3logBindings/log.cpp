@@ -1,6 +1,7 @@
 
-#include "intern_log.h"
-#include "g3logPython.h"
+
+#include "g3logBindings.h"
+//#include "intern_log.h"
 
 // level_val : enum pyLEVEL
 void g3::receivelog(const char *file, int line, const char* functionname, int level_val, const char *message)

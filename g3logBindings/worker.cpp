@@ -1,6 +1,6 @@
 
 #include "intern_log.h"
-#include "g3logPython.h"
+#include "g3logBindings.h"
 
 namespace g3 {
     
@@ -35,6 +35,8 @@ _keepalive = std::shared_ptr<ifaceLogWorker>(new ifaceLogWorker());
 _instance = _keepalive; 
 _scoped = scope;
     
+_instance.lock() -> pStore = std::make_unique<ThdStore> ();
+
 // init g3log:
 _instance.lock() -> worker = g3::LogWorker::createLogWorker();
 g3::initializeLogging(_instance.lock() -> worker.get());

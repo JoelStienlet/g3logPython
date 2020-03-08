@@ -29,6 +29,17 @@ On fedora 32:
 
 namespace g3 {
     
+void receivelog(const char *file, int line, const char* functionname, int level_val, const char *message);
+
+enum class pyLEVEL : int
+{
+    pyDEBUG,
+    pyINFO,
+    pyWARNING,
+    pyFATAL
+};
+
+    
 // interface classes:
 class ifaceLogWorker;
 // handles for the sinks:
@@ -157,7 +168,7 @@ public:
       
       Ptr_Mnger _g3logPtrs;
       Name_Mnger _userNames;
-      
+      /*
       // parameter storage for sink creation:
       // better be explicit about storage, so I let
       // this template for information only:
@@ -182,6 +193,8 @@ public:
           return persist;
          }
          
+         ==> not needed : currently all constructors copy the data
+         */
       
     }; // class SinkHndlAccess
     
@@ -218,7 +231,7 @@ public:
   ifaceLogWorker &operator=(const ifaceLogWorker &) = delete;
   //~ifaceLogWorker() {std::cerr << "ifaceLogWorker deleted" << std::endl;};
         
-    ThdStore Store; // TODO : make it private : proxy it somehow
+
   
 private:
   ifaceLogWorker(): SysLogSinks(0), LogRotateSinks(MULT_INSTANCES_ALLOWED), ClrTermSinks(MULT_INSTANCES_ALLOWED) {};
@@ -235,8 +248,10 @@ private:
     } singleton;
     
   std::unique_ptr<LogWorker> worker;
-  
-
+  std::shared_ptr<ThdStore> pStore; // TODO : make it private : proxy it somehow
+  friend class SysLogSnkHndl;  // for pStore access
+  friend class LogRotateSnkHndl; 
+  friend class ClrTermSnkHndl; 
 };
   
     

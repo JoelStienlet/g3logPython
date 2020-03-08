@@ -19,10 +19,12 @@ class get_pybind_include(object):
         return pybind11.get_include(self.user)
 
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+def read_file(filename):
+    with open(filename, "r") as fh:
+        return fh.read()
 
 
+# coverage option: selected with environment variable
 # example: sudo BUILD_WITH_COVERAGE=1 python3 setup.py install
 compile_args=["-std=c++14", "-v", "-fPIC"]
 link_args=[]
@@ -43,7 +45,7 @@ else:
 ext_modules = [
     setuptools.Extension(
         '_g3logPython',
-        ['g3logPython/store.cpp', 'g3logPython/ColorTermSink.cpp', 'g3logPython/g3logPython.cpp', 'g3logPython/sinks.cpp', 'g3logPython/worker.cpp', 'g3logPython/log.cpp'],
+        ['g3logPython/g3logPython.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
@@ -51,7 +53,7 @@ ext_modules = [
             '/usr/local/lib',
             '/usr/local/include/',
         ],
-        libraries=['stdc++','g3logger','g3logrotate','g3log_syslog'],
+        libraries=['stdc++','g3logger','g3logrotate','g3log_syslog','g3logBindings'],
         extra_compile_args=compile_args,
         extra_link_args=link_args,
         language='c++'
@@ -65,7 +67,7 @@ setuptools.setup(
     author_email='',
     url='https://github.com/JoelStienlet/g3logPython',
     description='python bindings for g3log',
-    long_description=long_description,
+    long_description=read_file("README.md"),
     packages=setuptools.find_packages(),
     ext_modules=ext_modules,
     python_requires='>=3.6',

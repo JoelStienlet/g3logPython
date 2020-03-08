@@ -10,7 +10,10 @@ sudo chown -R travis:travis build
 ls -al
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 cd Examples
-./Two_Sinks.py
+./00_simple.py
+./01_journald.py
+./02_logrotate.py
+./03_Three_Sinks.py
 cd $pwd
 cd Tests
 ./journald_sink_check_journalctl.py
