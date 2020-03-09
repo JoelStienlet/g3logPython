@@ -10,6 +10,9 @@ check_error() {
     fi
 }
 
+# enable !!
+set -o history -o histexpand
+
 curdir=${PWD##*/}
 if [ $curdir != "g3logPython" ]; then
   echo "not in the right directory. Should be in g3logPython. abord."
