@@ -24,7 +24,7 @@ pwd=`pwd`
 echo "$pwd"
 ls
 mkdir -p build_bindings && cd  build_bindings 
-cmake -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug .. && make && sudo make install
+cmake -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=Debug -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .. && make && sudo make install
 check_error $? !!
 cd $pwd
 sudo BUILD_WITH_COVERAGE=1 python3 setup.py install
