@@ -13,11 +13,14 @@ colorTermSink = logger.ClrTermSinks.new_Sink("color term")
 
 print("loggers created")
 
-journaldSink.setLogHeader("========== TEST HEADER ==========")
+future = journaldSink.setLogHeader("========== TEST HEADER ==========")
+future.join() # optional: join() g3log's worker thread
 
-journaldSink.echoToStderr()
+future = journaldSink.echoToStderr()
+future.join() # optional
 
-logrotateSink.setMaxArchiveLogCount(10)
+future = logrotateSink.setMaxArchiveLogCount(10)
+future.join() # optional
 
 print("logger configured")
 
@@ -28,5 +31,7 @@ g3logPython.warning("important warning from python")
 
 # note: sink method calls and logging are asynchronous: the relative chronology
 # of their actual execution may not correspond to the relative order in the code.
-journaldSink.setIdentity("toto")
+future = journaldSink.setIdentity("toto")
+future.join() # optional
+
 g3logPython.debug("now with new id")

@@ -12,6 +12,9 @@ m.attr("g3INFO")    = pybind11::int_((int)g3::pyLEVEL::pyINFO);
 m.attr("g3WARNING") = pybind11::int_((int)g3::pyLEVEL::pyWARNING);
 m.attr("g3FATAL")   = pybind11::int_((int)g3::pyLEVEL::pyFATAL);
 
+pybind11::class_<g3::PyFuture<void>>(m, "PyFuture_void")
+    .def("join",   &g3::PyFuture<void>::join);  
+    
 pybind11::class_<g3::SysLogSnkHndl>(m, "SysLogSnkHndl")
     .def("setLogHeader", &g3::SysLogSnkHndl::setLogHeader)
     .def("setIdentity",  &g3::SysLogSnkHndl::setIdentity)

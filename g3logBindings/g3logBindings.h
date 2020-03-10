@@ -274,7 +274,36 @@ private:
   std::shared_ptr<ifaceLogWorker> _p_wrkrKeepalive; // as long as all handles aren't destroyed we can't destroy the logworker
   sinkkey_t _key; // for the map: _key -> unique_ptr
 };
+
+// ------------------------------------------------------------------------------
+//
+// Class to interact with the returned std::future from python
+// so that we can join g3log's worker threads
+//
+// ------------------------------------------------------------------------------
+
+// note: my first thought was to make a virtual class with join(), and have every specilization
+// inherit fromt that virtual, but exporting it to python is not really simple.
+template <typename delayed_t>
+class PyFuture
+{
+public:    
+    void join() {
+        if(!_ThdFut.valid()) throw std::future_error(std::future_errc::no_state);
+        _ThdFut.wait();
+       };
     
+private:
+    PyFuture() {};
+    friend class SysLogSnkHndl;    // gives access to the private constructor
+    friend class LogRotateSnkHndl; 
+    friend class ClrTermSnkHndl;
+    std::shared_future<delayed_t> get_copy() {return _ThdFut;};
+    void take_fut(std::shared_future<delayed_t> &&for_python) {_ThdFut = std::move(for_python);};
+    
+    std::shared_future<delayed_t> _ThdFut;
+};
+
 // ------------------------------------------------------------------------------
 // These classes provide the interface for sink interaction from python.
 // here we define a class for each sink, providing a simple interface for 
@@ -290,19 +319,19 @@ class SysLogSnkHndl: private cmmnSinkHndl
 {
 public:
     
-  void setLogHeader(const char* change);
-  void echoToStderr(); // enables the Linux extension LOG_PERROR
-  void muteStderr(); // opposite of echoToStderr()
+  PyFuture<void> setLogHeader(const char* change);
+  PyFuture<void> echoToStderr(); // enables the Linux extension LOG_PERROR
+  PyFuture<void> muteStderr(); // opposite of echoToStderr()
   
 // from syslog(3) : The argument ident in the call of openlog() is probably stored as-is. Thus, if the string it points to is changed, syslog() may start prepending the changed string, and if the string it points to ceases to exist, the results are undefined. 
 // --> we have to store the string in a long-term storage
 // => no longer required after PR #79 in g3sinks
-  void setIdentity(std::string& id);
-  void setFacility(int facility);
-  void setOption(int option);
-  void setLevelMap(std::map<int, int> const& m);
+  PyFuture<void> setIdentity(std::string& id);
+  PyFuture<void> setFacility(int facility);
+  PyFuture<void> setOption(int option);
+  PyFuture<void> setLevelMap(std::map<int, int> const& m);
 
-  void setLevel(SyslogSink::LogLevel level, int syslevel);
+  PyFuture<void> setLevel(SyslogSink::LogLevel level, int syslevel);
 
 public:
   SysLogSnkHndl() = delete;
@@ -320,14 +349,14 @@ class LogRotateSnkHndl: private cmmnSinkHndl
 {
 public:  
   
-  void save(std::string& logEnty);
+  PyFuture<void> save(std::string& logEnty);
   std::string changeLogFile(const std::string& log_directory, const std::string& new_name="");
   std::string logFileName();
-  void setMaxArchiveLogCount(int max_size);
+  PyFuture<void> setMaxArchiveLogCount(int max_size);
   int getMaxArchiveLogCount();
-  void setFlushPolicy(size_t flush_policy); // 0: never (system auto flush), 1 ... N: every n times
-  void flush();
-  void setMaxLogSize(int max_file_size_in_bytes);
+  PyFuture<void> setFlushPolicy(size_t flush_policy); // 0: never (system auto flush), 1 ... N: every n times
+  PyFuture<void> flush();
+  PyFuture<void> setMaxLogSize(int max_file_size_in_bytes);
   int getMaxLogSize();
   
 public:

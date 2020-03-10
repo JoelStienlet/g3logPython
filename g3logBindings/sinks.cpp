@@ -52,60 +52,72 @@ template LogRotateSnkHndl ifaceLogWorker::LogRotateSinkIface_t::new_Sink<const s
 // ====================================================================
 
 //
-void SysLogSnkHndl::setLogHeader(const char* change)
+PyFuture<void> SysLogSnkHndl::setLogHeader(const char* change)
 {
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setLogHeader bad key");
 if(change == NULL) throw std::logic_error("SysLogSnkHndl::setLogHeader NULL header string");
 
 auto p_HdrData = std::make_shared<Helper1StrStore> (change);
 
+PyFuture<void> fut_for_py;
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-    p_HdrData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()));
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()));
+    p_HdrData -> set_future(fut_for_py.get_copy());
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_HdrData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+return fut_for_py;
 }
 
 //
-void SysLogSnkHndl::setIdentity(std::string& id)
+PyFuture<void> SysLogSnkHndl::setIdentity(std::string& id)
 {   
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
 auto p_IdData = std::make_shared<Helper1StrStore> (id);
 
+PyFuture<void> fut_for_py;
   { // raii mutex locking with access() 
      g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-     p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()));
+     fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()));
+     p_IdData -> set_future(fut_for_py.get_copy());
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+return fut_for_py;
 }
 
 //
-void SysLogSnkHndl::echoToStderr()
+PyFuture<void> SysLogSnkHndl::echoToStderr()
 {   
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
 auto p_IdData = std::make_shared<StoredForThd<void>> ();
 
+PyFuture<void> fut_for_py;
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-    p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr)); 
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr));
+    p_IdData -> set_future(fut_for_py.get_copy());
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+return fut_for_py;
 }
 
 
-void SysLogSnkHndl::muteStderr()
+PyFuture<void> SysLogSnkHndl::muteStderr()
 {   
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
 auto p_IdData = std::make_shared<StoredForThd<void>> ();
 
+PyFuture<void> fut_for_py;
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-    p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::muteStderr)); 
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::muteStderr)); 
+    p_IdData -> set_future(fut_for_py.get_copy());
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+return fut_for_py;
 }
 
 // ====================================================================
@@ -113,17 +125,20 @@ _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: t
 // ====================================================================
 
 
-void LogRotateSnkHndl::setMaxArchiveLogCount(int max_size)
+PyFuture<void> LogRotateSnkHndl::setMaxArchiveLogCount(int max_size)
 {
 if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
 auto p_IdData = std::make_shared<StoredForThd<void>> (); // nothing to store, as the data (max_size) is a simple int
 
+PyFuture<void> fut_for_py;
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<LogRotate> *> MtxPtr = _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.access(_key);
-    p_IdData -> set_future(MtxPtr.p_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size)); 
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size));
+    p_IdData -> set_future(fut_for_py.get_copy());
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+return fut_for_py;
 }
 
 
