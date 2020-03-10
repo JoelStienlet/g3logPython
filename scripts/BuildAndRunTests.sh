@@ -36,7 +36,7 @@ ls -al
 export LD_LIBRARY_PATH=/usr/local/lib:/usr/local/lib64:$LD_LIBRARY_PATH
 cd Examples
 pwd
-./04_simple_build.sh --coverage
+./04_simple_build.sh --coverage -lgcov
 check_error $? !!
 echo "======= BUILD FINISHED ======="
 echo "running examples..."
