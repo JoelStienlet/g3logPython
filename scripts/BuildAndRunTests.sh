@@ -38,8 +38,15 @@ cd Examples
 pwd
 ./04_simple_build.sh -g -O0 --coverage -lgcov 
 check_error $? !!
+cd 05_py+cpp
+pwd
+./build_05.sh
+check_error $? !!
+cd $pwd
 echo "======= BUILD FINISHED ======="
 echo "running examples..."
+cd Examples
+pwd
 ./00_simple.py
 check_error $? !!
 ./01_journald.py
@@ -49,6 +56,9 @@ check_error $? !!
 ./03_Three_Sinks.py
 check_error $? !!
 ./04_simple
+check_error $? !!
+cd 05_py+cpp
+./05_main.py
 check_error $? !!
 cd $pwd
 cd Tests
