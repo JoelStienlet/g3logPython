@@ -32,7 +32,7 @@ option(CODE_COVERAGE "Enable coverage reporting" OFF)
 if(CODE_COVERAGE)
   message( "Coverage enabled in CMake" )
   # Add required flags (GCC & LLVM/Clang)
-  target_compile_options(g3logBindings INTERFACE
+  target_compile_options(g3logBindings PUBLIC
     -O0        # no optimization
     -g         # generate debug info
     --coverage # sets all required flags
