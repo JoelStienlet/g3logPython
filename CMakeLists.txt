@@ -29,7 +29,8 @@ add_library(g3logBindings
     
 # https://github.com/codecov/example-cpp11-cmake/blob/master/CMakeLists.txt
 option(CODE_COVERAGE "Enable coverage reporting" OFF)
-if(CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+if(CODE_COVERAGE)
+  message( "Coverage enabled in CMake" )
   # Add required flags (GCC & LLVM/Clang)
   target_compile_options(g3logBindings INTERFACE
     -O0        # no optimization
