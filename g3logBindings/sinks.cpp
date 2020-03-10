@@ -37,12 +37,24 @@ _userNames.set_key( name, key);
 return pySinkCls(singleton._instance.lock(), key);
 }
       
+template< class g3logSinkCls, typename ClbkType, ClbkType g3logMsgMvr, class pySinkCls>
+pySinkCls 
+ifaceLogWorker::SinkHndlAccess<g3logSinkCls, ClbkType, g3logMsgMvr, pySinkCls>::
+new_SinkHndl(const std::string& name)
+{
+sinkkey_t key =  _userNames.get_key(name);
+return pySinkCls(singleton._instance.lock(), key);
+}
+      
 // explicit instantiations: (see also worker.cpp)
 template ClrTermSnkHndl ifaceLogWorker::ClrTermSinkIface_t::new_Sink<>(const std::string&);
 template SysLogSnkHndl ifaceLogWorker::SysLogSinkIface_t::new_Sink<const char*>(const std::string&, const char*);
 template LogRotateSnkHndl ifaceLogWorker::LogRotateSinkIface_t::new_Sink<const std::string&, const std::string&>(const std::string&, const std::string&, const std::string&);    
 
-    
+template ClrTermSnkHndl   ifaceLogWorker::ClrTermSinkIface_t::new_SinkHndl(const std::string& name);
+template SysLogSnkHndl    ifaceLogWorker::SysLogSinkIface_t::new_SinkHndl(const std::string& name);
+template LogRotateSnkHndl ifaceLogWorker::LogRotateSinkIface_t::new_SinkHndl(const std::string& name);
+
 // ====================================================================
 // =========================== Color Term  ============================
 // ====================================================================

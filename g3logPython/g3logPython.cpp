@@ -30,17 +30,27 @@ pybind11::class_<g3::ClrTermSnkHndl>(m, "ClrTermSnkHndl");
 pybind11::class_<g3::ifaceLogWorker::SysLogSinkIface_t>(m, "SysLogSinkHndlAccess")
     .def("new_Sink", 
          &g3::ifaceLogWorker::SysLogSinkIface_t::new_Sink<const char*>,
-         "creates a syslog sink");
+         "creates a syslog sink")
+    .def("new_SinkHndl", 
+         &g3::ifaceLogWorker::SysLogSinkIface_t::new_SinkHndl,
+         "get a new syslog sink handle on an existing sink");
     
 pybind11::class_<g3::ifaceLogWorker::LogRotateSinkIface_t>(m, "LogRotateSinkHndlAccess")
     .def("new_Sink", 
          &g3::ifaceLogWorker::LogRotateSinkIface_t::new_Sink<const std::string&, const std::string&>,
-         "creates a LogRotate sink");
+         "creates a LogRotate sink")
+    .def("new_SinkHndl", 
+         &g3::ifaceLogWorker::LogRotateSinkIface_t::new_SinkHndl,
+         "get a new LogRotate sink handle on an existing sink");
+
     
 pybind11::class_<g3::ifaceLogWorker::ClrTermSinkIface_t>(m, "ClrTermSinkHndlAccess")
     .def("new_Sink", 
          &g3::ifaceLogWorker::ClrTermSinkIface_t::new_Sink<>,
-         "creates a colorTerm sink");
+         "creates a colorTerm sink")
+    .def("new_SinkHndl", 
+         &g3::ifaceLogWorker::ClrTermSinkIface_t::new_SinkHndl,
+         "get a new colorTerm sink handle on an existing sink");
     
 pybind11::class_<g3::ifaceLogWorker, std::shared_ptr<g3::ifaceLogWorker>>(m, "ifaceLogWorker")
     .def_readonly("SysLogSinks", 
