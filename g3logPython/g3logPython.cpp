@@ -15,7 +15,8 @@ m.attr("g3FATAL")   = pybind11::int_((int)g3::pyLEVEL::pyFATAL);
 pybind11::class_<g3::SysLogSnkHndl>(m, "SysLogSnkHndl")
     .def("setLogHeader", &g3::SysLogSnkHndl::setLogHeader)
     .def("setIdentity",  &g3::SysLogSnkHndl::setIdentity)
-    .def("echoToStderr", &g3::SysLogSnkHndl::echoToStderr);    
+    .def("echoToStderr", &g3::SysLogSnkHndl::echoToStderr)  
+    .def("muteStderr",   &g3::SysLogSnkHndl::muteStderr);   
     
 pybind11::class_<g3::LogRotateSnkHndl>(m, "LogRotateSnkHndl")
     .def("setMaxArchiveLogCount", &g3::LogRotateSnkHndl::setMaxArchiveLogCount);

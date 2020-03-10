@@ -292,9 +292,11 @@ public:
     
   void setLogHeader(const char* change);
   void echoToStderr(); // enables the Linux extension LOG_PERROR
+  void muteStderr(); // opposite of echoToStderr()
   
 // from syslog(3) : The argument ident in the call of openlog() is probably stored as-is. Thus, if the string it points to is changed, syslog() may start prepending the changed string, and if the string it points to ceases to exist, the results are undefined. 
 // --> we have to store the string in a long-term storage
+// => no longer required after PR #79 in g3sinks
   void setIdentity(std::string& id);
   void setFacility(int facility);
   void setOption(int option);

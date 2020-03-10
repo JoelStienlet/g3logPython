@@ -95,7 +95,18 @@ _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: t
 }
 
 
+void SysLogSnkHndl::muteStderr()
+{   
+if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity bad key");
 
+auto p_IdData = std::make_shared<StoredForThd<void>> ();
+
+  { // raii mutex locking with access()
+    g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
+    p_IdData -> set_future(MtxPtr.p_hndl -> call(&g3::SyslogSink::muteStderr)); 
+  }
+_p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+}
 
 // ====================================================================
 // ========================== LogRotate ===============================

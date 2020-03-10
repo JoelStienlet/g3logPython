@@ -18,3 +18,4 @@ log.debug("from the logger in python again")
 
 cppLib.log_something()
 
+cppLib.log_string("a string from python")
