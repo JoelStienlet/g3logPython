@@ -60,6 +60,9 @@ check_error $? !!
 cd 05_py+cpp
 ./05_main.py
 check_error $? !!
+cd $pwd && cd Examples
+./06_sink_by_name.py
+check_error $? !!
 cd $pwd
 cd Tests
 pwd

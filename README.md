@@ -64,6 +64,10 @@ This is a simple output to stderr, with colors.
 #### adding sink types
 Adding a new sink type requires modifications to the code of this library, so cannot be done at runtime. Nevertheless, most parts of this wrapper are templated, so that adding a new sink type shouldn't be a major difficulty.
 
+### joining g3log's threads
+
+An interface for the std::future returned by g3log's call() is provided, and exported to python (see example 06). In practice, this is useful when you want to make sure a given configuration of a sink has taken effect before the next instructions are executed. You may safely ignore the future however, because the lifetime of the data passed to the sink's methods are managed by the bindings layer (safely: in the sense that no access to unallocated memory will occur).
+
 ### Object lifetime
 
 #### python strings
