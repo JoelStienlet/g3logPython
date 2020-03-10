@@ -38,9 +38,9 @@ if(CODE_COVERAGE)
     --coverage # sets all required flags
   )
   if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
-    target_link_options(g3logBindings INTERFACE --coverage)
+    target_link_options(g3logBindings PUBLIC --coverage)
   else()
-    target_link_libraries(g3logBindings INTERFACE --coverage)
+    target_link_libraries(g3logBindings PUBLIC --coverage)
   endif()
 endif(CODE_COVERAGE)
     
