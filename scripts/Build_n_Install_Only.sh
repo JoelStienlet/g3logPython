@@ -27,7 +27,7 @@ sudo rm -rf build_bindings
 sudo rm -rf build
 
 mkdir -p build_bindings && cd  build_bindings 
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .. && make && sudo make install
+VERBOSE=1 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON .. && make && sudo make install
 check_error $? !!
 cd $pwd
 sudo BUILD_WITH_COVERAGE=0 python3 setup.py install

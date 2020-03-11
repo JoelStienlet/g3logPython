@@ -4,16 +4,17 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-
-# TODO: remove this:
-set(g3logger_DIR "/usr/local/lib64/cmake/g3logger")
-
 message( "====== Install Prefix ==========" )
 message("${CMAKE_INSTALL_PREFIX}")
 message( "================================" )
 
-find_package(g3logger REQUIRED)
+find_package(g3logger REQUIRED 
+             PATHS /usr/local/lib64 /usr/local/lib )
+# TODO: improve cmake interoperability
+# find_package(g3logrotate REQUIRED
+#              NAMES g3logrotate g3sinks )
 find_library(ROTATE g3logrotate)
+# find_package(g3log_syslog REQUIRED )
 find_library(SYSLOG g3log_syslog)
 
 project(g3logBindings)
