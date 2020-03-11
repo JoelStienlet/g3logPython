@@ -63,6 +63,8 @@ check_error $? !!
 cd $pwd && cd Examples
 ./06_sink_by_name.py
 check_error $? !!
+./07_ColorTerm.py
+check_error $? !!
 cd $pwd
 cd Tests
 pwd

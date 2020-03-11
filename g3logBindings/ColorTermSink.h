@@ -12,17 +12,13 @@ public:
 // http://stackoverflow.com/questions/2616906/how-do-i-output-coloured-text-to-a-linux-terminal
   enum FG_Color {YELLOW = 33, RED = 31, GREEN=32, WHITE = 37};
 
-  ColorTermSink() {};
+  ColorTermSink(): _mute(false) {};
   
   void ReceiveLogMessage(g3::LogMessageMover logEntry);
-//   {
-//      auto level = logEntry.get()._level;
-//      auto color = GetColor(level);
-// 
-//      std::cout << "\033[" << color << "m" 
-//        << logEntry.get().toString() << "\033[m" << std::endl;
-//   }
-//   
+
+  void mute();
+  void unmute();
+  
 private:
   FG_Color GetColor(const LEVELS level) const {
      if (level.value == WARNING.value) { return YELLOW; }
@@ -31,6 +27,8 @@ private:
 
      return WHITE;
   }
+  
+  bool _mute;
 };
 
 } // g3

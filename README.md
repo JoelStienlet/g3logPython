@@ -79,7 +79,7 @@ The global store has a thread running in the background, periodically checking f
 A flag can be passed when performing the first call to get_ifaceLogWorker(). This flag selects the lifetime of the LogWorker interface, that can either be the lifetime of the process, or managed by the user through shared_ptrs.
 
 #### Handles (LogRotateSnkHndl...)
-in g3log, the worker will return a handle when adding a new sink. Here, this wrapper keeps ownership of g3log's handles, and provides its own wrapper-handle to python. In this wrapper, a sink is identified by its name, so you can easily access a handle using the sink's name.
+in g3log, the worker will return a handle when adding a new sink. Here, this wrapper keeps ownership of g3log's handles, and provides its own wrapper-handle to python. In this wrapper, a sink is identified by its name, so you can easily access a handle using the sink's name (see example 06).
 
 ### Thread safety
 See g3log if you're not familiar with the call() to access sinks.

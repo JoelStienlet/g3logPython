@@ -59,6 +59,38 @@ template LogRotateSnkHndl ifaceLogWorker::LogRotateSinkIface_t::new_SinkHndl(con
 // =========================== Color Term  ============================
 // ====================================================================
 
+PyFuture<void> ClrTermSnkHndl::mute()
+{
+if(_key == InvalidSinkKey) throw std::logic_error("ClrTermSnkHndl::mute bad key");
+
+auto p_IdData = std::make_shared<StoredForThd<void>> ();
+
+PyFuture<void> fut_for_py;
+  { // raii mutex locking with access()
+    g3::LockedObj<g3::SinkHandle<g3::ColorTermSink> *> MtxPtr = _p_wrkrKeepalive -> ClrTermSinks._g3logPtrs.access(_key);
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::ColorTermSink::mute));
+    p_IdData -> set_future(fut_for_py.get_copy());
+  }
+_p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+return fut_for_py;
+}
+  
+PyFuture<void> ClrTermSnkHndl::unmute()
+{
+if(_key == InvalidSinkKey) throw std::logic_error("ClrTermSnkHndl::unmute bad key");
+
+auto p_IdData = std::make_shared<StoredForThd<void>> ();
+
+PyFuture<void> fut_for_py;
+  { // raii mutex locking with access()
+    g3::LockedObj<g3::SinkHandle<g3::ColorTermSink> *> MtxPtr = _p_wrkrKeepalive -> ClrTermSinks._g3logPtrs.access(_key);
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::ColorTermSink::unmute));
+    p_IdData -> set_future(fut_for_py.get_copy());
+  }
+_p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
+return fut_for_py;
+}
+
 // ====================================================================
 // =========================== SysLog  ================================
 // ====================================================================

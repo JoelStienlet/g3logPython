@@ -375,7 +375,10 @@ private:
 class ClrTermSnkHndl: private cmmnSinkHndl
 {
 public:
-  // Sink methods go here...
+  // Sink methods go here... (implemented in sinks.cpp)
+  PyFuture<void> mute();
+  PyFuture<void> unmute();
+    
 public:
   ClrTermSnkHndl() = delete;
   ClrTermSnkHndl &operator=(const ClrTermSnkHndl &) = delete;

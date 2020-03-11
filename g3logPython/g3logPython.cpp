@@ -23,9 +23,11 @@ pybind11::class_<g3::SysLogSnkHndl>(m, "SysLogSnkHndl")
     
 pybind11::class_<g3::LogRotateSnkHndl>(m, "LogRotateSnkHndl")
     .def("setMaxArchiveLogCount", &g3::LogRotateSnkHndl::setMaxArchiveLogCount);
+// TODO: add other methods
     
-pybind11::class_<g3::ClrTermSnkHndl>(m, "ClrTermSnkHndl");
-    
+pybind11::class_<g3::ClrTermSnkHndl>(m, "ClrTermSnkHndl")
+    .def("mute", &g3::ClrTermSnkHndl::mute)
+    .def("unmute",  &g3::ClrTermSnkHndl::unmute);
 
 pybind11::class_<g3::ifaceLogWorker::SysLogSinkIface_t>(m, "SysLogSinkHndlAccess")
     .def("new_Sink", 
