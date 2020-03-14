@@ -44,8 +44,8 @@ log.debug("hello world!")
 ```
 ## Technical aspects
 
-Technical aspects are described on [this page](https://github.com/JoelStienlet/doc/technical.md).
+Technical aspects are described on [this page](https://github.com/JoelStienlet/g3logPython/blob/master/doc/technical.md).
 
 ## Other ressources
 
-[links to similar projects](https://github.com/JoelStienlet/doc/links.md)
+[links to similar projects](https://github.com/JoelStienlet/g3logPython/blob/master/doc/links.md)
