@@ -27,8 +27,7 @@ public:
     ThdStore(): terminate_thd(false) {start_thread();};
     ~ThdStore() {sendTerm_n_join();};
     
-private:    
-      
+private:
   // we make two lists: 
   // - one list shared between threads, protected by a mutex.
   // - one list that can only be accessed by the cleanup-thread
@@ -68,7 +67,6 @@ template <typename delayed_t>
 class StoredForThd: public StoredIface
 {
 public:
-    
     std::future_status has_finished() { return _ThdFut.wait_for(std::chrono::seconds(0)); };
     
     delayed_t get() {return _ThdFut.get();}
@@ -76,7 +74,6 @@ public:
     void set_future(std::shared_future<delayed_t> &&fut) {_ThdFut = fut;};
     
 private:
-
     std::shared_future<delayed_t> _ThdFut;
 };
 

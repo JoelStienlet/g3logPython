@@ -6,7 +6,6 @@
 // level_val : enum pyLEVEL
 void g3::receivelog(const char *file, int line, const char* functionname, int level_val, const char *message)
 {
-    
 switch(level_val) {
     case (int)g3::pyLEVEL::pyDEBUG: {
         const LEVELS &level = DEBUG;

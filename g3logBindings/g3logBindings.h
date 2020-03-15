@@ -100,7 +100,6 @@ public:
   class SinkHndlAccess
     {
     public:
-    
       // Sink creation: call new_Sink() for the chosen sink type.
       //  the purpose of the "name" passed to new_Sink() is to facilitate the access to a specific sink without the burden to keep its handle around.
       //  note: currently g3log has no method to remove a sink once inserted, but that may change. 
@@ -115,7 +114,6 @@ public:
       SinkHndlAccess &operator=(const SinkHndlAccess &) = delete;
     
     private:
-    
       class Ptr_Mnger
         {
         public:
@@ -155,8 +153,7 @@ public:
           // note: no key to name here: key management should be done elsewhere. ( Ptr_Mnger )
         };
     
-    private:
-          
+    private:          
       friend class ifaceLogWorker; // can only be constructed in ifaceLogWorker
       SinkHndlAccess(uint32_t options): _options(options) {};
       
@@ -209,7 +206,6 @@ public:
   using ClrTermSinkIface_t = ifaceLogWorker::SinkHndlAccess<g3::ColorTermSink, ClrTermMvr_t, &g3::ColorTermSink::ReceiveLogMessage, g3::ClrTermSnkHndl>;
   
 public:
-
   // Interfaces to the sinks.
   // each sink type has its own interface class here.
   // Access is thread safe, but contains locks.
@@ -230,9 +226,7 @@ public:
   ifaceLogWorker(const ifaceLogWorker &) = delete;
   ifaceLogWorker &operator=(const ifaceLogWorker &) = delete;
   //~ifaceLogWorker() {std::cerr << "ifaceLogWorker deleted" << std::endl;};
-        
 
-  
 private:
   ifaceLogWorker(): SysLogSinks(0), LogRotateSinks(MULT_INSTANCES_ALLOWED), ClrTermSinks(MULT_INSTANCES_ALLOWED) {};
   static struct  sglt_t{
@@ -318,7 +312,6 @@ private:
 class SysLogSnkHndl: private cmmnSinkHndl
 {
 public:
-    
   PyFuture<void> setLogHeader(const char* change);
   PyFuture<void> echoToStderr(); // enables the Linux extension LOG_PERROR
   PyFuture<void> muteStderr(); // opposite of echoToStderr()
@@ -341,14 +334,12 @@ public:
 private:
   friend ifaceLogWorker::SysLogSinkIface_t;
   SysLogSnkHndl(std::shared_ptr<ifaceLogWorker> pworker, sinkkey_t key) : cmmnSinkHndl(pworker, key) {};
-  
 }; // SysLogSnkHndl
     
     
 class LogRotateSnkHndl: private cmmnSinkHndl
 {
-public:  
-  
+public:
   PyFuture<void> save(std::string& logEnty);
   std::string changeLogFile(const std::string& log_directory, const std::string& new_name="");
   std::string logFileName();
@@ -367,7 +358,6 @@ public:
 private:
   friend ifaceLogWorker::LogRotateSinkIface_t;
   LogRotateSnkHndl(std::shared_ptr<ifaceLogWorker> pworker, sinkkey_t key) : cmmnSinkHndl(pworker, key)  {};
-  
 }; // LogRotateSnkHndl  
 
     

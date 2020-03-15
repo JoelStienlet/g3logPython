@@ -2,6 +2,7 @@
 [![GitHub license](https://img.shields.io/badge/license-Unlicense-brightgreen)](https://github.com/JoelStienlet/g3logPython/blob/master/LICENSE)
 [![codecov](https://codecov.io/gh/JoelStienlet/g3logPython/branch/master/graph/badge.svg)](https://codecov.io/gh/JoelStienlet/g3logPython)
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/JoelStienlet/g3logPython.svg)](http://isitmaintained.com/project/JoelStienlet/g3logPython "Percentage of issues still open")
+[![CodeFactor](https://www.codefactor.io/repository/github/joelstienlet/g3logpython/badge/master)](https://www.codefactor.io/repository/github/joelstienlet/g3logpython/overview/master)
 
 # g3logPython
 Python bindings for [g3log](https://github.com/KjellKod/g3log.git)
