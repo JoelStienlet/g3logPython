@@ -2,9 +2,9 @@
 
 check_error() {
     ret_code=$1
-    full_command=${@:2}
+    full_command=${*:2}
     if [ $ret_code -ne 0 ]; then
-        echo "\"${full_command}\""
+        echo "Command: \"${full_command}\""
         echo "ERROR Code: ${ret_code}."
         exit $ret_code
     fi
