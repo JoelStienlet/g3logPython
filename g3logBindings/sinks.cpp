@@ -65,11 +65,12 @@ if(_key == InvalidSinkKey) throw std::logic_error("ClrTermSnkHndl::mute bad key"
 
 auto p_IdData = std::make_shared<StoredForThd<void>> ();
 
-PyFuture<void> fut_for_py;
+PyFutPass pass; // Passkey Pattern
+PyFuture<void> fut_for_py(pass);
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::ColorTermSink> *> MtxPtr = _p_wrkrKeepalive -> ClrTermSinks._g3logPtrs.access(_key);
-    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::ColorTermSink::mute));
-    p_IdData -> set_future(fut_for_py.get_copy());
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::ColorTermSink::mute), pass);
+    p_IdData -> set_future(fut_for_py.get_copy(pass));
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 return fut_for_py;
@@ -81,11 +82,12 @@ if(_key == InvalidSinkKey) throw std::logic_error("ClrTermSnkHndl::unmute bad ke
 
 auto p_IdData = std::make_shared<StoredForThd<void>> ();
 
-PyFuture<void> fut_for_py;
+PyFutPass pass; // Passkey Pattern
+PyFuture<void> fut_for_py(pass);
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::ColorTermSink> *> MtxPtr = _p_wrkrKeepalive -> ClrTermSinks._g3logPtrs.access(_key);
-    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::ColorTermSink::unmute));
-    p_IdData -> set_future(fut_for_py.get_copy());
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::ColorTermSink::unmute), pass);
+    p_IdData -> set_future(fut_for_py.get_copy(pass));
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 return fut_for_py;
@@ -103,11 +105,12 @@ if(change == NULL) throw std::logic_error("SysLogSnkHndl::setLogHeader NULL head
 
 auto p_HdrData = std::make_shared<Helper1StrStore> (change);
 
-PyFuture<void> fut_for_py;
+PyFutPass pass; // Passkey Pattern
+PyFuture<void> fut_for_py(pass);
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()));
-    p_HdrData -> set_future(fut_for_py.get_copy());
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::setLogHeader, p_HdrData -> c_str()), pass);
+    p_HdrData -> set_future(fut_for_py.get_copy(pass));
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_HdrData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 return fut_for_py;
@@ -120,11 +123,12 @@ if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity ba
 
 auto p_IdData = std::make_shared<Helper1StrStore> (id);
 
-PyFuture<void> fut_for_py;
+PyFutPass pass; // Passkey Pattern
+PyFuture<void> fut_for_py(pass);
   { // raii mutex locking with access() 
      g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-     fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()));
-     p_IdData -> set_future(fut_for_py.get_copy());
+     fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::setIdentity, p_IdData -> c_str()), pass);
+     p_IdData -> set_future(fut_for_py.get_copy(pass));
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 return fut_for_py;
@@ -137,11 +141,12 @@ if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity ba
 
 auto p_IdData = std::make_shared<StoredForThd<void>> ();
 
-PyFuture<void> fut_for_py;
+PyFutPass pass; // Passkey Pattern
+PyFuture<void> fut_for_py(pass);
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr));
-    p_IdData -> set_future(fut_for_py.get_copy());
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::echoToStderr), pass);
+    p_IdData -> set_future(fut_for_py.get_copy(pass));
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 return fut_for_py;
@@ -154,11 +159,12 @@ if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity ba
 
 auto p_IdData = std::make_shared<StoredForThd<void>> ();
 
-PyFuture<void> fut_for_py;
+PyFutPass pass; // Passkey Pattern
+PyFuture<void> fut_for_py(pass);
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<g3::SyslogSink> *> MtxPtr = _p_wrkrKeepalive -> SysLogSinks._g3logPtrs.access(_key);
-    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::muteStderr)); 
-    p_IdData -> set_future(fut_for_py.get_copy());
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&g3::SyslogSink::muteStderr), pass); 
+    p_IdData -> set_future(fut_for_py.get_copy(pass));
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 return fut_for_py;
@@ -175,11 +181,12 @@ if(_key == InvalidSinkKey) throw std::logic_error("SysLogSnkHndl::setIdentity ba
 
 auto p_IdData = std::make_shared<StoredForThd<void>> (); // nothing to store, as the data (max_size) is a simple int
 
-PyFuture<void> fut_for_py;
+PyFutPass pass; // Passkey Pattern
+PyFuture<void> fut_for_py(pass);
   { // raii mutex locking with access()
     g3::LockedObj<g3::SinkHandle<LogRotate> *> MtxPtr = _p_wrkrKeepalive -> LogRotateSinks._g3logPtrs.access(_key);
-    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size));
-    p_IdData -> set_future(fut_for_py.get_copy());
+    fut_for_py.take_fut(MtxPtr.p_hndl -> call(&LogRotate::setMaxArchiveLogCount, max_size), pass);
+    p_IdData -> set_future(fut_for_py.get_copy(pass));
   }
 _p_wrkrKeepalive -> pStore.get() -> store(p_IdData); // store() locks a mutex: the _key mutex should be unlocked to avoid deadlocks
 return fut_for_py;

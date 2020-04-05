@@ -25,6 +25,7 @@ add_library(g3logBindings
     g3logBindings/log.cpp
     g3logBindings/sinks.cpp
     g3logBindings/store.cpp
+    g3logBindings/fd_listener.cpp
     g3logBindings/worker.cpp
     )
     

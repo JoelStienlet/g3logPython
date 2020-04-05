@@ -47,6 +47,8 @@ class SysLogSnkHndl;
 class LogRotateSnkHndl;
 class ClrTermSnkHndl;
 
+class FD_Mnger; // for the file descriptor interface
+
 // singleton interface to g3log:
 std::shared_ptr<ifaceLogWorker> getifaceLogWorker();
 
@@ -76,7 +78,117 @@ class LockedObj {
 };
 
 
+// ------------------------------------------------------------------------------
+//
+// Class to interact with the returned std::future from python
+// so that we can join g3log's worker threads
+//
+// ------------------------------------------------------------------------------
+
+class PyFutPass // Passkey Pattern : key for sinks
+    {
+    private:
+       PyFutPass() = default;
+       ~PyFutPass() = default;
+       template<typename> friend class PyFuture;
+       
+       // give access to:
+       friend class SysLogSnkHndl;    
+       friend class LogRotateSnkHndl; 
+       friend class ClrTermSnkHndl;
+       friend class FD_Mnger;
+    };
+
+// note: my first thought was to make a virtual class with join(), and have every specilization
+// inherit fromt that virtual, but exporting it to python is not really simple.
+template <typename delayed_t>
+class PyFuture
+{    
+public: // passkeyed
+    PyFuture() = delete;
+    PyFuture(PyFutPass) {};
+    void take_fut(std::shared_future<delayed_t> &&for_python, PyFutPass) {_ThdFut = std::move(for_python);};
+    std::shared_future<delayed_t> get_copy(PyFutPass) {return _ThdFut;};
+    
+public:    
+    void join() {
+        if(!_ThdFut.valid()) throw std::future_error(std::future_errc::no_state);
+        _ThdFut.wait();
+       };
+        
+private:
+    std::shared_future<delayed_t> _ThdFut;
+};
+
+
+
+// ------------------------------------------------------------------------------
+//
+//  Classes for the file descriptor input to the logger
+//
+// ------------------------------------------------------------------------------
+
+class FD_Mnger;
+
+// forwards the data read from one pipe to g3log
+// object lifetime: created before the worker thread starts, deleted at the same time as the worker thread ends.
+// destroy() : starts the destruction process (closing file descriptors, shutting-down the worker thread,...)
+//             returns a future so that another thread can wait for its destruction to be finished.
+class fd_listener
+{
+public:
+  class constrPass // Passkey Pattern
+    {
+    private:
+        constrPass() = default;
+        ~constrPass() = default;
+        friend g3::FD_Mnger;
+    };
+public:
+  fd_listener(const fd_listener &) = delete;
+  fd_listener(int fd_w, int fd_r, fd_listener::constrPass);
+  std::shared_future<void> destroy();
+  
+private:
+  std::shared_future<void> thd_ret; // created just before starting the thread
+  int fd_writer;
+  int fd_reader;
+  std::thread _worker;
+  void read_on_fd(std::promise<void>);
+};
+    
+// manages the file descriptor listeners                  
+class FD_Mnger // file descriptor manager
+{
+public:
+  class constrPass // Passkey Pattern
+    {
+    private:
+        constrPass() = default;
+        ~constrPass() = default;
+        friend g3::ifaceLogWorker;
+    };
+    
+public:
+  FD_Mnger(const FD_Mnger &) = delete;
+  FD_Mnger(FD_Mnger::constrPass){};
+  ~FD_Mnger() {}; // TODO
+  int new_pipe(); // returns the writing end of a new pipe. lock + unlock of mutex
+  PyFuture<void> async_remove(int fd); // deletes a pipe. lock + unlock of mutex
+
+private:
+  std::mutex _lock; // protects all the datastructures herein
+  std::map<int, std::shared_ptr<g3::fd_listener>> _fd_to_listener;
+  std::vector<std::shared_ptr<g3::fd_listener>> _final_join; // already destroyed, must be joined before exiting the process.
+};
+
+
+// ------------------------------------------------------------------------------
+//
 // This class is providing a common (py & c++) interface for the unique g3log logger instance.
+//
+// ------------------------------------------------------------------------------
+
 // note that this is a singleton (as there's only one g3log instance) 
 class ifaceLogWorker
 {
@@ -120,9 +232,6 @@ public:
           Ptr_Mnger(const Ptr_Mnger &) = delete;
           sinkkey_t insert(std::unique_ptr<g3::SinkHandle<g3logSinkCls>>); // lock + unlock of mutex
           
-          //g3::SinkHandle<g3logSinkCls> *accessTOREPLACE(sinkkey_t key); // locks the mutex. call done() once finished to release it. 
-          //void done(sinkkey_t key); // unlocks the mutex locked by access().
-          
           class g3::LockedObj<g3::SinkHandle<g3logSinkCls> *> access(sinkkey_t key);
           
           void remove(sinkkey_t); // lock + unlock of mutex
@@ -153,7 +262,7 @@ public:
           // note: no key to name here: key management should be done elsewhere. ( Ptr_Mnger )
         };
     
-    private:          
+    private:
       friend class ifaceLogWorker; // can only be constructed in ifaceLogWorker
       SinkHndlAccess(uint32_t options): _options(options) {};
       
@@ -194,7 +303,8 @@ public:
          */
       
     }; // class SinkHndlAccess
-    
+
+public:
   // typedefs of message mover functions:
   typedef void (g3::SyslogSink::* SyslogMvr_t)(g3::LogMessageMover) ;
   typedef void (LogRotate::* LogRotateMvr_t)(std::string) ;
@@ -212,13 +322,18 @@ public:
   SysLogSinkIface_t SysLogSinks; // TODO VERY URGENT : don't allow creation of more than one syslog sink TODO
   LogRotateSinkIface_t LogRotateSinks;
   ClrTermSinkIface_t ClrTermSinks;
-  
+   
   // scope_lifetime on first call:
   //  - when set to false (default), the interface remains alive until the program exits. 
   //  - when set to true, the interface will be destoyed when the user releases his last shared_ptr. 
   // That parameter is only used on the first call, any subsequent call will ignore this argument.
   static std::shared_ptr<ifaceLogWorker> get_ifaceLogWorker(bool scope_lifetime = false);
 
+  // an alternative interface to the logger: 
+  // this was created for interoperability with other existing loggers that can take a
+  // file descriptor, or a FILE *, as destination for the strings to log.
+  FD_Mnger fd_iface;  
+  
   // may be useful for debug purposes:
   void print_addr(){ {std::cout << singleton._instance.lock().get() << std::endl;} }  
     
@@ -228,7 +343,7 @@ public:
   //~ifaceLogWorker() {std::cerr << "ifaceLogWorker deleted" << std::endl;};
 
 private:
-  ifaceLogWorker(): SysLogSinks(0), LogRotateSinks(MULT_INSTANCES_ALLOWED), ClrTermSinks(MULT_INSTANCES_ALLOWED) {};
+  ifaceLogWorker(): SysLogSinks(0), LogRotateSinks(MULT_INSTANCES_ALLOWED), ClrTermSinks(MULT_INSTANCES_ALLOWED), fd_iface(FD_Mnger::constrPass()) {};
   static struct  sglt_t{
       static std::once_flag initInstanceFlag;
       static std::once_flag killKeepaliveFlag;
@@ -269,34 +384,7 @@ private:
   sinkkey_t _key; // for the map: _key -> unique_ptr
 };
 
-// ------------------------------------------------------------------------------
-//
-// Class to interact with the returned std::future from python
-// so that we can join g3log's worker threads
-//
-// ------------------------------------------------------------------------------
 
-// note: my first thought was to make a virtual class with join(), and have every specilization
-// inherit fromt that virtual, but exporting it to python is not really simple.
-template <typename delayed_t>
-class PyFuture
-{
-public:    
-    void join() {
-        if(!_ThdFut.valid()) throw std::future_error(std::future_errc::no_state);
-        _ThdFut.wait();
-       };
-    
-private:
-    PyFuture() {};
-    friend class SysLogSnkHndl;    // gives access to the private constructor
-    friend class LogRotateSnkHndl; 
-    friend class ClrTermSnkHndl;
-    std::shared_future<delayed_t> get_copy() {return _ThdFut;};
-    void take_fut(std::shared_future<delayed_t> &&for_python) {_ThdFut = std::move(for_python);};
-    
-    std::shared_future<delayed_t> _ThdFut;
-};
 
 // ------------------------------------------------------------------------------
 // These classes provide the interface for sink interaction from python.
