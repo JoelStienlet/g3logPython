@@ -38,6 +38,8 @@ cd Examples
 pwd
 ./04_simple_build.sh -g -O0 --coverage -lgcov 
 check_error $? !!
+./08_build.sh -g -O0 --coverage -lgcov 
+check_error $? !!
 cd 05_py+cpp
 pwd
 ./build_05.sh
@@ -64,6 +66,8 @@ cd $pwd && cd Examples
 ./06_sink_by_name.py
 check_error $? !!
 ./07_ColorTerm.py
+check_error $? !!
+./08_fd_iface
 check_error $? !!
 cd $pwd
 cd Tests
