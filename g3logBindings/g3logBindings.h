@@ -137,16 +137,18 @@ class FD_Mnger;
 class fd_listener
 {
 public:
-  class constrPass // Passkey Pattern
+  class Pass // Passkey Pattern
     {
     private:
-        constrPass() = default;
-        ~constrPass() = default;
+        Pass() = default;
+        ~Pass() = default;
         friend g3::FD_Mnger;
     };
 public:
   fd_listener(const fd_listener &) = delete;
-  fd_listener(int fd_w, int fd_r, fd_listener::constrPass);
+  fd_listener(int fd_w, int fd_r, fd_listener::Pass);
+  void join(fd_listener::Pass) {thd_ret.wait();};
+  
   std::shared_future<void> destroy();
   
 private:
@@ -171,8 +173,8 @@ public:
     
 public:
   FD_Mnger(const FD_Mnger &) = delete;
-  FD_Mnger(FD_Mnger::constrPass){};
-  ~FD_Mnger() {}; // TODO
+  FD_Mnger(FD_Mnger::constrPass) {};
+  ~FD_Mnger();
   int new_pipe(); // returns the writing end of a new pipe. lock + unlock of mutex
   PyFuture<void> async_remove(int fd); // deletes a pipe. lock + unlock of mutex
 

@@ -26,7 +26,7 @@ do{
        while(offset < n_read) {
            if(buf[offset] == 0) {
                LOG(INFO) << strout.str();
-               strout.str();
+               strout.str("");
              } else {
                strout.put(buf[offset]);
              }
@@ -40,7 +40,7 @@ fd_reader = -1;
 to_join.set_value();
 }
 
-g3::fd_listener::fd_listener(int fd_w, int fd_r, fd_listener::constrPass)
+g3::fd_listener::fd_listener(int fd_w, int fd_r, fd_listener::Pass)
 {
 fd_writer = fd_w;
 fd_reader = fd_r;
@@ -67,7 +67,7 @@ try
   // raii mutex lock
   std::lock_guard<std::mutex> lock(_lock);
   // cannot use make_shared here, because of private constructor
-  std::shared_ptr<fd_listener> p_listener(new fd_listener(pipefd[1], pipefd[0], fd_listener::constrPass() ));
+  std::shared_ptr<fd_listener> p_listener(new fd_listener(pipefd[1], pipefd[0], fd_listener::Pass() ));
   _fd_to_listener.insert({pipefd[1], p_listener});
 } catch (...) {
     LOG(WARNING) << "failed to insert pipe fd in map";
@@ -82,6 +82,7 @@ return pipefd[1];
 g3::PyFuture<void> g3::FD_Mnger::async_remove(int fd)
 {
 std::shared_ptr<g3::fd_listener> p_to_del;
+
 { 
   // raii mutex lock
   std::lock_guard<std::mutex> lock(_lock);
@@ -98,7 +99,7 @@ fut_for_py.take_fut(std::move(thd_ret), pass);
 return fut_for_py;
 }
 
-/*
+
 //
 // although async_remove() returns a future that allows the user to wait for the listener to finish,
 // we have no guarantee that he will do so.
@@ -107,7 +108,33 @@ return fut_for_py;
 // -> call async_remove() on all elements in _fd_to_listener, then join all threads in _final_join.
 // 
 g3::FD_Mnger::~FD_Mnger()
-{
-    // TODO
+{ 
+std::vector<int> keys;
+
+{ 
+  // raii mutex lock
+  // note: if the lock has any effect in the destructor, something may be really wrong. But do it for more security.
+  std::lock_guard<std::mutex> lock(_lock);
+  
+  for(std::map<int,std::shared_ptr<g3::fd_listener>>::iterator it = _fd_to_listener.begin(); it != _fd_to_listener.end(); ++it) {
+     keys.push_back(it->first);
+    }
 }
-*/
+
+for(std::vector<int>::iterator it = keys.begin(); it != keys.end(); ++it) {
+   // this will lock + unlock the mutex for each element: but there should never be that many elements anyway (most probably one, maybe 2, 10 exceptionally...)
+   async_remove(*it);
+  }
+
+{
+  std::lock_guard<std::mutex> lock(_lock); // same remark as above. Better make sure not to touch the vector while iterating on it.
+  for(std::vector<std::shared_ptr<g3::fd_listener>>::iterator it = _final_join.begin(); it != _final_join.end(); ++it) {
+     // join all elements
+     it -> get() -> join(fd_listener::Pass() );
+    }
+
+  _final_join.clear();
+}
+
+}
+
