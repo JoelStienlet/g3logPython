@@ -9,6 +9,8 @@
 #include "pnotify.h"
 
 #include <stdio.h>
+#include <string.h>
+#include <errno.h>
 
 // https://docs.panda3d.org/1.10/cpp/reference/panda3d.core.Notify
 // https://www.panda3d.org/reference/cxx/MultiplexStream.php 
@@ -21,17 +23,17 @@ void set_g3log_as_panda3d_backend()
 {
 // get a pointer to the interface singleton:
 std::shared_ptr<g3::ifaceLogWorker> pIface = g3::ifaceLogWorker::get_ifaceLogWorker();
-
-//FILE *file_from_fd = fdopen(pIface -> fd_iface.new_pipe(),"a");
-FILE *file_from_fd = fopen("dummy.txt","w+");
+errno = 0;
+int pipefd = pIface -> fd_iface.new_pipe();
+FILE *file_from_fd = fdopen(pipefd,"w");
 if(file_from_fd == NULL) {
     LOG(WARNING) << "unable to make FILE from file descriptor.";
-  } else {
-   MultiplexStream *p_mx = new MultiplexStream(); // TODO: free it later
-   Notify().ptr() -> set_ostream_ptr(p_mx, false);
-   p_mx -> add_stdio_file(file_from_fd, false);
+    LOG(WARNING) << strerror(errno);
+  } else {  
+   MultiplexStream *p_mx = new MultiplexStream();
+   Notify().ptr() -> set_ostream_ptr(p_mx, true); // libpandaexpress.so  true: delete later
+   p_mx -> add_stdio_file(file_from_fd, true); // --> will close FILE*, thus also pipefd
   }
-//p_mx -> add_file("dummy2.txt"); // <-- libpandaexpress.so
 }
 
 void set_cerr_as_panda3d_backend()

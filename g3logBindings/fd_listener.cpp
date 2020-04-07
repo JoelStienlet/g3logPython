@@ -24,7 +24,7 @@ do{
        std::stringstream strout;
        ssize_t offset = 0;
        while(offset < n_read) {
-           if(buf[offset] == 0) {
+           if( (buf[offset] == 0) || (buf[offset] == '\n') ) {
                LOG(INFO) << strout.str();
                strout.str("");
              } else {
