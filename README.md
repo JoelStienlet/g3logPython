@@ -3,9 +3,10 @@
 [![codecov](https://codecov.io/gh/JoelStienlet/g3logPython/branch/master/graph/badge.svg)](https://codecov.io/gh/JoelStienlet/g3logPython)
 [![Percentage of issues still open](http://isitmaintained.com/badge/open/JoelStienlet/g3logPython.svg)](http://isitmaintained.com/project/JoelStienlet/g3logPython "Percentage of issues still open")
 [![CodeFactor](https://www.codefactor.io/repository/github/joelstienlet/g3logpython/badge/master)](https://www.codefactor.io/repository/github/joelstienlet/g3logpython/overview/master)
+[![Languages](https://img.shields.io/badge/languages-Python3/C++-blue)](https://img.shields.io)
 
-# g3logPython
-Python bindings for [g3log](https://github.com/KjellKod/g3log.git)
+# [g3logPython](https://github.com/JoelStienlet/g3logPython)
+[Python bindings](https://github.com/JoelStienlet/g3logPython) for [g3log](https://github.com/KjellKod/g3log.git)
 
 This library provides python3 bindings for g3log + g3sinks (currently logrotate, syslog, and a color-terminal output).
 Calls can be made both from python and C++, retaining the thread-safety of g3log.
@@ -20,6 +21,10 @@ The binding layer modifies the interface of g3log+sinks to make it easily wrappa
 Unlicense license
 
 ## Build and Install
+
+```bash
+git clone https://github.com/JoelStienlet/g3logPython
+```
 
 For the C++ bindings:
 
@@ -48,5 +53,8 @@ log.debug("hello world!")
 Technical aspects are described on [this page](https://github.com/JoelStienlet/g3logPython/blob/master/doc/technical.md).
 
 ## Other ressources
+[Our Facebook page](https://www.facebook.com/G3logpython-102070851426280/)<br/>
+[g3log c++ logger](https://github.com/KjellKod/g3log.git)<br/>
 
-[links to similar projects](https://github.com/JoelStienlet/g3logPython/blob/master/doc/links.md)
+[links to similar projects and other loggers](https://github.com/JoelStienlet/g3logPython/blob/master/doc/links.md)
+
