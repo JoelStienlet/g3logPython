@@ -35,7 +35,7 @@ cd g3sinks
 mkdir -p  build_travis
 cd build_travis
 # change boost shared library option to use boost as a shared library (the distro fedora for example ships only the dynamic lib version)
-sed -i -e '/Boost_USE_STATIC_LIBS/s/ON/OFF/' sink_logrotate/CMakeLists.txt
+sed -i -e '/Boost_USE_STATIC_LIBS/s/ON/OFF/' ../sink_logrotate/CMakeLists.txt
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j && sudo make install
 
