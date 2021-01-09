@@ -14,3 +14,4 @@ ls
 cd panda3d
 python3 makepanda/makepanda.py --threads 3 --everything --installer --no-opencv 
 # --no-egl --no-gles --no-gles2
+

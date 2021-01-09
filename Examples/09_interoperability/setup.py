@@ -53,7 +53,7 @@ ext_modules = [
                    'panda',
                    'pandaexpress',
                    ],
-        extra_compile_args=["-std=c++14", "-v","-fPIC"],
+        extra_compile_args=["-std=c++17", "-v","-fPIC"],
         language='c++'
     ),
 ]
