@@ -8,6 +8,15 @@ sudo apt-get install -y libboost-all-dev python3-setuptools python3-pip python3-
 #  python3-pybind11  <-- does not work: PYBIND11_MODULE causes syntax errors...
 # see https://github.com/pybind/pybind11/issues/890#issuecomment-544160220
 
+#
+# \
+# |-- g3log-install
+# |
+# |-- g3sinks-install
+# |
+# |-- pybind11-install
+#
+
 mkdir g3log-install && cd g3log-install
 git clone https://github.com/KjellKod/g3log.git -b master
 cd g3log
@@ -25,12 +34,20 @@ git clone https://github.com/KjellKod/g3sinks.git -b master
 cd g3sinks
 mkdir -p  build_travis
 cd build_travis
-cmake ..
+# change boost shared library option to use boost as shared library (the distro fedora for example ships only the dynamic lib version)
+cmake -DCMAKE_BUILD_TYPE=Release -DBoost_USE_STATIC_LIBS=OFF ..
 make -j && sudo make install
 
 
 cd $pwd
+mkdir pybind11-install && cd pybind11-install
 git clone https://github.com/pybind/pybind11.git
 cd pybind11
 sudo pip3 install .
+
+# cleanup:
+cd $pwd
+sudo rm -rf g3log-install
+sudo rm -rf g3sinks-install
+sudo rm -rf pybind11-install
 

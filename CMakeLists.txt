@@ -1,21 +1,21 @@
 cmake_minimum_required(VERSION 3.9.0)
 
 enable_language(CXX)
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message( "====== Install Prefix ==========" )
 message("${CMAKE_INSTALL_PREFIX}")
 message( "================================" )
 
-find_package(g3logger REQUIRED 
+find_package(g3log REQUIRED 
              PATHS /usr/local/lib64 /usr/local/lib )
 # TODO: improve cmake interoperability
 # find_package(g3logrotate REQUIRED
 #              NAMES g3logrotate g3sinks )
 find_library(ROTATE g3logrotate)
 # find_package(g3log_syslog REQUIRED )
-find_library(SYSLOG g3log_syslog)
+find_library(SYSLOG g3syslog)
 
 project(g3logBindings)
 

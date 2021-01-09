@@ -3,7 +3,7 @@ import os
 
 # see https://github.com/pybind/python_example/blob/master/setup.py
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 class get_pybind_include(object):
     """Helper class to determine the pybind11 include path
@@ -26,7 +26,7 @@ def read_file(filename):
 
 # coverage option: selected with environment variable
 # example: sudo BUILD_WITH_COVERAGE=1 python3 setup.py install
-compile_args=["-std=c++14", "-v", "-fPIC"]
+compile_args=["-std=c++17", "-v", "-fPIC"]
 link_args=[]
 env_var_name = "BUILD_WITH_COVERAGE"
 cov_env_val = os.environ.get( env_var_name, None )
@@ -39,6 +39,13 @@ if cov_env_val is not None:
 else:
     print("no ",env_var_name," environment variable found")
 
+# we have to add the paths were g3log's .so files were installed, so that the linker can find them.
+# alternatively, one could add an option to the /usr/bin/env command in each script:
+#  -S LD_LIBRARY_PATH="/usr/local/lib64;/usr/local/lib"
+# but the later solution is less convenient.
+link_args.extend(['-Wl,-rpath=/usr/local/lib','-Wl,-rpath=/usr/local/lib64'])
+
+
 
 
 # https://docs.python.org/3/distutils/setupscript.html#describing-extension-modules
@@ -50,15 +57,21 @@ ext_modules = [
             # Path to pybind11 headers
             get_pybind_include(),
             get_pybind_include(user=True),
-            '/usr/local/lib',
             '/usr/local/include/',
         ],
-        libraries=['stdc++','g3logger','g3logrotate','g3log_syslog','g3logBindings'],
+        libraries=['stdc++','g3log','g3logrotate','g3syslog','g3logBindings'],
         extra_compile_args=compile_args,
         extra_link_args=link_args,
         language='c++'
     ),
 ]
+
+# 
+for sE in ext_modules:
+    print('Extension ', sE.name)
+    print('    libraries: ', sE.libraries)
+    print('    extra link args: ', sE.extra_link_args)
+
 
 setuptools.setup(
     name='g3logPython',
