@@ -41,9 +41,9 @@ ext_modules = [
         # list of installed files: rpm -qlp ./panda3d/*.rpm
         # https://docs.panda3d.org/1.10/cpp/programming/using-cpp/compiling/linux#how-to-compile-a-c-panda3d-program-on-linux
         libraries=['stdc++',
-                   'g3logger',
+                   'g3log',
                    'g3logrotate',
-                   'g3log_syslog',
+                   'g3syslog',
                    'g3logBindings',
                    'p3direct',
                    'p3dtool',
